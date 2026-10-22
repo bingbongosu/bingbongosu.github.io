@@ -1,0 +1,12 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Bowers;Jeremy;;;
+FN:Jeremy Bowers
+ORG:Keller Williams Main Line
+TITLE:Team Leader
+TEL;TYPE=CELL,VOICE,PREF:+12153709107
+TEL;TYPE=WORK,VOICE:+16105200100
+EMAIL;TYPE=INTERNET,WORK:jeremycbowers@kw.com
+URL:https://mainlinekw.com
+ADR;TYPE=WORK:;;6 Coulter Ave\, FL 2;Ardmore;PA;19003;USA
+END:VCARD
