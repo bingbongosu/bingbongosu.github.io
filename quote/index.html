@@ -1,0 +1,903 @@
+<!doctype html><html><head><meta charset=utf8><meta name="robots" content="noindex"><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style></head><body>
+<title>Paragon Quick Quote</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');
+
+  :root {
+    --ink: #0B0D10;
+    --paper: #FAFAF8;
+    --surface: #FFFFFF;
+    --accent: #03B588;
+    --accent-deep: #02795B;
+    --navy: #172A4C;
+    --line: #E1E1DC;
+    --danger: #990000;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #F2F3F1;
+      --paper: #0B0D10;
+      --surface: #14171B;
+      --accent: #1FE3AC;
+      --accent-deep: #03B588;
+      --navy: #3A5A8C;
+      --line: #24272C;
+      --danger: #E4665F;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #F2F3F1;
+    --paper: #0B0D10;
+    --surface: #14171B;
+    --accent: #1FE3AC;
+    --accent-deep: #03B588;
+    --navy: #3A5A8C;
+    --line: #24272C;
+    --danger: #E4665F;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Open Sans', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .progress-track {
+    height: 4px;
+    width: 100%;
+    background: var(--line);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 20%;
+    background: var(--accent);
+    transition: width 0.4s cubic-bezier(.4,0,.2,1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .progress-fill { transition: none; }
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.3rem 1.75rem;
+    max-width: 720px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .mark {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .mark svg { width: 26px; height: 26px; display: block; }
+  .mark-text {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 0.92rem;
+    letter-spacing: 0.01em;
+  }
+  .mark-text span {
+    display: block;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.58rem;
+    letter-spacing: 0.14em;
+    color: var(--accent-deep);
+  }
+
+  .step-counter {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--ink);
+    opacity: 0.5;
+  }
+
+  main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 1.5rem 4rem;
+  }
+
+  .stage {
+    width: 100%;
+    max-width: 640px;
+  }
+
+  .step {
+    display: none;
+    animation: rise 0.45s cubic-bezier(.2,.8,.2,1);
+  }
+  .step.active { display: block; }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .step { animation: none; }
+  }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-deep);
+    margin: 0 0 0.9rem;
+  }
+
+  h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.7rem, 4.4vw, 2.5rem);
+    line-height: 1.12;
+    margin: 0 0 0.5rem;
+    text-wrap: balance;
+  }
+
+  .hint {
+    color: var(--ink);
+    opacity: 0.62;
+    font-size: 1rem;
+    margin: 0 0 2.1rem;
+    max-width: 46ch;
+  }
+
+  .chip-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+  }
+
+  .chip {
+    border: 1.5px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    padding: 1.15rem 1.2rem;
+    text-align: left;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1.02rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .chip small {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    font-size: 0.78rem;
+    opacity: 0.6;
+  }
+  .chip:hover { border-color: var(--accent); }
+  .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .chip.selected {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  }
+  .chip.selected::after {
+    content: "Selected";
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-deep);
+  }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.3rem 1.1rem;
+  }
+  .field-grid.single { grid-template-columns: 1fr; }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .field.full { grid-column: 1 / -1; }
+  label {
+    font-size: 0.76rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+  input, select {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1.05rem;
+    color: var(--ink);
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid var(--line);
+    padding: 0.55rem 0.1rem;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+  input:focus, select:focus { border-color: var(--accent); }
+  input::placeholder { color: var(--ink); opacity: 0.32; }
+
+  .stepper {
+    display: flex;
+    border: 1.5px solid var(--line);
+    width: fit-content;
+  }
+  .stepper button {
+    width: 2.6rem;
+    height: 2.6rem;
+    border: none;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 1.1rem;
+    cursor: pointer;
+    font-family: 'Open Sans', sans-serif;
+  }
+  .stepper button:hover { background: var(--line); }
+  .stepper .count {
+    width: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+    border-left: 1.5px solid var(--line);
+    border-right: 1.5px solid var(--line);
+  }
+
+  .nav-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 2.4rem;
+  }
+
+  .btn {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0.85rem 1.7rem;
+    border: 1.5px solid var(--ink);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+  }
+  .btn-primary {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .btn-primary:hover { background: var(--accent-deep); border-color: var(--accent-deep); color: #fff; }
+  .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; background: var(--ink); border-color: var(--ink); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--ink);
+    border-color: transparent;
+    opacity: 0.6;
+    padding-left: 0.3rem;
+  }
+  .btn-ghost:hover { opacity: 1; }
+  .btn-ghost:disabled { visibility: hidden; }
+
+  .review-list {
+    border-top: 1.5px solid var(--line);
+    margin-top: 0.5rem;
+  }
+  .review-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 0;
+    border-bottom: 1.5px solid var(--line);
+    font-size: 0.94rem;
+  }
+  .review-row .k { opacity: 0.55; }
+  .review-row .v { font-weight: 600; text-align: right; }
+
+  .consent {
+    display: flex;
+    gap: 0.65rem;
+    align-items: flex-start;
+    margin-top: 1.6rem;
+    font-size: 0.85rem;
+    opacity: 0.75;
+    line-height: 1.5;
+  }
+  .consent input { margin-top: 0.2rem; }
+
+  .done {
+    text-align: center;
+  }
+  .done .badge {
+    width: 3.4rem;
+    height: 3.4rem;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #06110D;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.4rem;
+  }
+  .done .badge.warn { background: var(--danger); color: #fff; }
+  .done .badge svg { width: 1.5rem; height: 1.5rem; }
+  .status-line {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.76rem;
+    letter-spacing: 0.02em;
+    color: var(--accent-deep);
+    margin-top: -1.2rem;
+    margin-bottom: 1.6rem;
+  }
+  .status-line.warn { color: var(--danger); }
+
+  .fine {
+    font-size: 0.78rem;
+    opacity: 0.5;
+    margin-top: 1.6rem;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  .admin-toggle {
+    display: block;
+    text-align: center;
+    margin-top: 2.2rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.03em;
+    color: var(--ink);
+    opacity: 0.45;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+  }
+  .admin-toggle:hover { opacity: 0.8; }
+
+  .admin-panel {
+    display: none;
+    margin-top: 1.4rem;
+    border: 1.5px solid var(--line);
+    background: var(--surface);
+  }
+  .admin-panel.open { display: block; }
+  .admin-panel-head {
+    padding: 1rem 1.2rem;
+    border-bottom: 1.5px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .admin-panel-head h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    margin: 0;
+  }
+  .admin-panel-head span {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    opacity: 0.5;
+  }
+  .lead-row {
+    padding: 0.9rem 1.2rem;
+    border-bottom: 1.5px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.86rem;
+  }
+  .lead-row:last-child { border-bottom: none; }
+  .lead-row .who { font-weight: 700; }
+  .lead-row .meta { opacity: 0.55; font-size: 0.78rem; }
+  .lead-row .when { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; opacity: 0.45; white-space: nowrap; }
+  .admin-empty {
+    padding: 1.6rem 1.2rem;
+    text-align: center;
+    font-size: 0.86rem;
+    opacity: 0.55;
+  }
+
+  @media (max-width: 560px) {
+    .chip-grid { grid-template-columns: 1fr; }
+    .field-grid { grid-template-columns: 1fr; }
+    .field-grid .field.half { grid-column: 1 / -1; }
+    .lead-row { flex-direction: column; gap: 0.2rem; }
+  }
+</style>
+
+<div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="topbar">
+  <div class="mark">
+    <svg viewBox="0 0 40 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 2L38 34H2L20 2Z" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/>
+      <path d="M13 21H27" stroke="currentColor" stroke-width="2.6"/>
+    </svg>
+    <div class="mark-text">PARAGON<span>INSURANCE GROUP</span></div>
+  </div>
+  <div class="step-counter" id="stepCounter">01 / 05</div>
+</div>
+
+<main>
+  <div class="stage">
+
+    <form id="quoteForm">
+      <!-- Step 1: coverage type -->
+      <section class="step active" data-step="1">
+        <p class="eyebrow">Quick Quote</p>
+        <h1>What are we covering?</h1>
+        <p class="hint">Pick the one that fits best — we'll tailor the next few questions to it.</p>
+        <div class="chip-grid" id="coverageChips">
+          <button type="button" class="chip" data-value="Auto">Auto<small>Cars, trucks, motorcycles</small></button>
+          <button type="button" class="chip" data-value="Home">Home<small>Owners, renters, condo</small></button>
+          <button type="button" class="chip" data-value="Bundle">Auto + Home<small>Bundle and save</small></button>
+          <button type="button" class="chip" data-value="Business">Business<small>Commercial &amp; liability</small></button>
+        </div>
+      </section>
+
+      <!-- Step 2: specifics (dynamic) -->
+      <section class="step" data-step="2">
+        <p class="eyebrow" id="specificsEyebrow">Almost there</p>
+        <h1 id="specificsHeading">A couple specifics</h1>
+        <p class="hint" id="specificsHint">Rough numbers are fine — nothing here is final.</p>
+        <div class="field-grid" id="specificsFields"></div>
+      </section>
+
+      <!-- Step 3: contact info -->
+      <section class="step" data-step="3">
+        <p class="eyebrow">Reaching you</p>
+        <h1>Where should quotes go?</h1>
+        <p class="hint">No spam, no auto-dialer — a real Paragon agent follows up.</p>
+        <div class="field-grid">
+          <div class="field">
+            <label for="firstName">First name</label>
+            <input id="firstName" name="firstName" placeholder="Jordan" required>
+          </div>
+          <div class="field">
+            <label for="lastName">Last name</label>
+            <input id="lastName" name="lastName" placeholder="Rivera" required>
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="jordan@email.com" required>
+          </div>
+          <div class="field">
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="tel" placeholder="(610) 555-0134" required>
+          </div>
+          <div class="field full">
+            <label for="zip">ZIP code</label>
+            <input id="zip" name="zip" inputmode="numeric" maxlength="5" placeholder="19063" required>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 4: preferences -->
+      <section class="step" data-step="4">
+        <p class="eyebrow">Last one</p>
+        <h1>How should we follow up?</h1>
+        <p class="hint">We'll match your preference where we can.</p>
+        <div class="chip-grid" id="contactChips">
+          <button type="button" class="chip" data-value="Call">Call me<small>Fastest turnaround</small></button>
+          <button type="button" class="chip" data-value="Text">Text me<small>Quick and quiet</small></button>
+          <button type="button" class="chip" data-value="Email">Email me<small>I'll read on my time</small></button>
+          <button type="button" class="chip" data-value="Either">No preference<small>Whatever's easiest</small></button>
+        </div>
+      </section>
+
+      <!-- Step 5: review -->
+      <section class="step" data-step="5">
+        <p class="eyebrow">Review</p>
+        <h1>Ready to send?</h1>
+        <p class="hint">Check the details below — you can jump back to fix anything.</p>
+        <div class="review-list" id="reviewList"></div>
+        <label class="consent">
+          <input type="checkbox" id="consent" required>
+          <span>I agree to be contacted by Paragon Insurance Group about this request.</span>
+        </label>
+      </section>
+
+      <!-- Done -->
+      <section class="step done" data-step="6">
+        <div class="badge" id="doneBadge">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <p class="status-line" id="statusLine">Saving…</p>
+        <h1 id="doneHeading">You're in the queue, <span id="doneName">friend</span>.</h1>
+        <p class="hint" style="margin-left:auto;margin-right:auto;" id="doneHint">A Paragon agent will reach out by <span id="doneMethod">your preferred method</span> shortly.</p>
+      </section>
+
+      <div class="nav-row" id="navRow">
+        <button type="button" class="btn btn-ghost" id="backBtn">Back</button>
+        <button type="button" class="btn btn-primary" id="nextBtn" disabled>Continue</button>
+      </div>
+    </form>
+
+    <button type="button" class="admin-toggle" id="adminToggle">View captured leads ▾</button>
+    <div class="admin-panel" id="adminPanel">
+      <div class="admin-panel-head">
+        <h2>Captured leads</h2>
+        <span id="adminStatus">connecting…</span>
+      </div>
+      <div id="adminList"><div class="admin-empty">Loading…</div></div>
+    </div>
+
+    <p class="fine">Submissions save to a live store attached to this page — durable across reloads, visible to anyone signed in to your Claude organization who opens this link (this platform has no way to let the public write without also letting them read, so this only works as an internal test, not the embed for the live site). Each submission is also sent to a Zapier hook that creates a lead in EZLynx, so use made-up test details only if you don't want a real lead created.</p>
+  </div>
+</main>
+
+<script>
+(function () {
+  const state = { coverage: null, contactMethod: null, specifics: {} };
+  const totalSteps = 5;
+  let current = 1;
+  let dbApi = null;
+  let saveOutcome = null; // 'saved' | 'sent' | 'unavailable' | 'error'
+  const ZAPIER_HOOK_URL = 'https://hooks.zapier.com/hooks/catch/29109447/414l3hb/';
+
+  const steps = Array.from(document.querySelectorAll('.step'));
+  const progressFill = document.getElementById('progressFill');
+  const stepCounter = document.getElementById('stepCounter');
+  const backBtn = document.getElementById('backBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const navRow = document.getElementById('navRow');
+
+  // --- db capability wiring ---
+  (async function initDb() {
+    try {
+      if (window.claude && typeof window.claude.use === 'function') {
+        dbApi = await window.claude.use('db');
+      }
+    } catch (e) {
+      dbApi = null;
+    }
+  })();
+
+  async function saveLead() {
+    const cfg = specificsConfig[state.coverage];
+    const lead = {
+      coverage: state.coverage,
+      specifics: cfg.fields.map(f => ({ label: f.label, value: state.specifics[f.id] })),
+      firstName: document.getElementById('firstName').value,
+      lastName: document.getElementById('lastName').value,
+      email: document.getElementById('email').value,
+      phone: document.getElementById('phone').value,
+      zip: document.getElementById('zip').value,
+      contactMethod: state.contactMethod,
+      submittedAt: new Date().toISOString()
+    };
+    // Send to Zapier (Catch Hook -> EZLynx lead). Form-encoded + no-cors avoids a CORS preflight;
+    // the response is opaque, so a resolved fetch means "sent", not "confirmed".
+    let webhookSent = false;
+    try {
+      const body = new URLSearchParams({
+        firstName: lead.firstName,
+        lastName: lead.lastName,
+        email: lead.email,
+        phone: lead.phone,
+        zip: lead.zip,
+        coverage: lead.coverage || '',
+        contactMethod: lead.contactMethod || '',
+        details: lead.specifics.map(s => `${s.label}: ${s.value ?? ''}`).join('; '),
+        submittedAt: lead.submittedAt,
+        source: 'Paragon Quick Quote form'
+      });
+      await fetch(ZAPIER_HOOK_URL, { method: 'POST', mode: 'no-cors', body });
+      webhookSent = true;
+    } catch (e) {
+      webhookSent = false;
+    }
+
+    let dbSaved = false;
+    let dbFailed = false;
+    if (dbApi) {
+      try {
+        await dbApi.collection('leads').add(lead);
+        dbSaved = true;
+      } catch (e) {
+        dbFailed = true;
+      }
+    }
+
+    if (dbSaved) return 'saved';
+    if (webhookSent) return 'sent';
+    return dbFailed ? 'error' : 'unavailable';
+  }
+
+  const specificsConfig = {
+    Auto: {
+      eyebrow: 'Auto details',
+      heading: 'Tell us about the vehicles',
+      hint: 'Rough numbers are fine — nothing here is final.',
+      fields: [
+        { type: 'stepper', id: 'vehicleCount', label: 'Vehicles to insure', min: 1, max: 6, value: 1 },
+        { type: 'select', id: 'primaryUse', label: 'Primary use', options: ['Commuting', 'Pleasure', 'Business'] },
+        { type: 'select', id: 'currentlyInsured', label: 'Currently insured?', options: ['Yes', 'No', 'Lapsed'] }
+      ]
+    },
+    Home: {
+      eyebrow: 'Home details',
+      heading: 'Tell us about the property',
+      hint: 'This just helps us route you to the right coverage.',
+      fields: [
+        { type: 'select', id: 'ownRent', label: 'Own or rent', options: ['Own', 'Rent', 'Condo'] },
+        { type: 'text', id: 'yearBuilt', label: 'Year built (approx.)', placeholder: '1998' },
+        { type: 'select', id: 'currentlyInsured', label: 'Currently insured?', options: ['Yes', 'No', 'Lapsed'] }
+      ]
+    },
+    Bundle: {
+      eyebrow: 'Bundle details',
+      heading: 'Quick numbers on both',
+      hint: 'Bundling usually means a better rate on each policy.',
+      fields: [
+        { type: 'stepper', id: 'vehicleCount', label: 'Vehicles to insure', min: 1, max: 6, value: 1 },
+        { type: 'select', id: 'ownRent', label: 'Own or rent your home', options: ['Own', 'Rent', 'Condo'] },
+        { type: 'select', id: 'currentlyInsured', label: 'Currently insured?', options: ['Yes', 'No', 'Lapsed'] }
+      ]
+    },
+    Business: {
+      eyebrow: 'Business details',
+      heading: 'A bit about the business',
+      hint: 'Every industry has different exposure — this points us the right way.',
+      fields: [
+        { type: 'text', id: 'businessType', label: 'Industry / type', placeholder: 'Contractor, restaurant, retail…' },
+        { type: 'stepper', id: 'employeeCount', label: 'Employees', min: 0, max: 50, value: 1 },
+        { type: 'select', id: 'currentlyInsured', label: 'Currently insured?', options: ['Yes', 'No', 'Lapsed'] }
+      ]
+    }
+  };
+
+  function renderSpecifics(type) {
+    const cfg = specificsConfig[type];
+    document.getElementById('specificsEyebrow').textContent = cfg.eyebrow;
+    document.getElementById('specificsHeading').textContent = cfg.heading;
+    document.getElementById('specificsHint').textContent = cfg.hint;
+    const container = document.getElementById('specificsFields');
+    container.innerHTML = '';
+    cfg.fields.forEach(f => {
+      const wrap = document.createElement('div');
+      wrap.className = 'field full';
+      const label = document.createElement('label');
+      label.textContent = f.label;
+      label.setAttribute('for', f.id);
+      wrap.appendChild(label);
+
+      if (f.type === 'select') {
+        const sel = document.createElement('select');
+        sel.id = f.id;
+        sel.innerHTML = '<option value="" disabled selected>Choose one</option>' +
+          f.options.map(o => `<option value="${o}">${o}</option>`).join('');
+        sel.addEventListener('change', () => { state.specifics[f.id] = sel.value; validateStep(); });
+        wrap.appendChild(sel);
+      } else if (f.type === 'text') {
+        const inp = document.createElement('input');
+        inp.id = f.id;
+        inp.placeholder = f.placeholder || '';
+        inp.addEventListener('input', () => { state.specifics[f.id] = inp.value; validateStep(); });
+        wrap.appendChild(inp);
+      } else if (f.type === 'stepper') {
+        state.specifics[f.id] = f.value;
+        const stepper = document.createElement('div');
+        stepper.className = 'stepper';
+        const minus = document.createElement('button');
+        minus.type = 'button'; minus.textContent = '−';
+        const count = document.createElement('div');
+        count.className = 'count'; count.textContent = f.value;
+        const plus = document.createElement('button');
+        plus.type = 'button'; plus.textContent = '+';
+        minus.addEventListener('click', () => {
+          f.value = Math.max(f.min, f.value - 1);
+          count.textContent = f.value;
+          state.specifics[f.id] = f.value;
+          validateStep();
+        });
+        plus.addEventListener('click', () => {
+          f.value = Math.min(f.max, f.value + 1);
+          count.textContent = f.value;
+          state.specifics[f.id] = f.value;
+          validateStep();
+        });
+        stepper.append(minus, count, plus);
+        wrap.appendChild(stepper);
+      }
+      container.appendChild(wrap);
+    });
+  }
+
+  function setupChipGroup(containerId, stateKey) {
+    const container = document.getElementById(containerId);
+    container.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        container.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+        state[stateKey] = chip.dataset.value;
+        if (stateKey === 'coverage') renderSpecifics(chip.dataset.value);
+        validateStep();
+      });
+    });
+  }
+  setupChipGroup('coverageChips', 'coverage');
+  setupChipGroup('contactChips', 'contactMethod');
+
+  document.querySelectorAll('#quoteForm input').forEach(inp => {
+    if (['firstName','lastName','email','phone','zip'].includes(inp.id)) {
+      inp.addEventListener('input', validateStep);
+    }
+  });
+  document.getElementById('consent').addEventListener('change', validateStep);
+
+  function validateStep() {
+    let ok = false;
+    if (current === 1) ok = !!state.coverage;
+    if (current === 2) {
+      const cfg = specificsConfig[state.coverage];
+      ok = cfg.fields.every(f => {
+        const v = state.specifics[f.id];
+        return v !== undefined && v !== '' && v !== null;
+      });
+    }
+    if (current === 3) {
+      const req = ['firstName','lastName','email','phone','zip'];
+      ok = req.every(id => document.getElementById(id).value.trim().length > 0);
+    }
+    if (current === 4) ok = !!state.contactMethod;
+    if (current === 5) ok = document.getElementById('consent').checked;
+    nextBtn.disabled = !ok;
+    return ok;
+  }
+
+  function renderReview() {
+    const list = document.getElementById('reviewList');
+    const cfg = specificsConfig[state.coverage];
+    const rows = [
+      ['Coverage', state.coverage],
+      ...cfg.fields.map(f => [f.label, state.specifics[f.id]]),
+      ['Name', `${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`],
+      ['Email', document.getElementById('email').value],
+      ['Phone', document.getElementById('phone').value],
+      ['ZIP', document.getElementById('zip').value],
+      ['Contact via', state.contactMethod]
+    ];
+    list.innerHTML = rows.map(([k, v]) => `<div class="review-row"><span class="k">${k}</span><span class="v">${v}</span></div>`).join('');
+  }
+
+  function renderDoneStatus() {
+    const badge = document.getElementById('doneBadge');
+    const statusLine = document.getElementById('statusLine');
+    const heading = document.getElementById('doneHeading');
+    const hint = document.getElementById('doneHint');
+    const name = document.getElementById('firstName').value || 'friend';
+    const methodWord = { Call: 'phone call', Text: 'text', Email: 'email', Either: 'phone or email' }[state.contactMethod] || 'your preferred method';
+
+    badge.classList.remove('warn');
+    statusLine.classList.remove('warn');
+
+    if (saveOutcome === 'saved') {
+      statusLine.textContent = 'Saved to the live lead store';
+      heading.innerHTML = `You're in the queue, <span>${name}</span>.`;
+      hint.innerHTML = `A Paragon agent will reach out by <span>${methodWord}</span> shortly. This one actually landed — check "View captured leads" below.`;
+    } else if (saveOutcome === 'sent') {
+      statusLine.textContent = 'Sent to Paragon';
+      heading.innerHTML = `You're in the queue, <span>${name}</span>.`;
+      hint.innerHTML = `A Paragon agent will reach out by <span>${methodWord}</span> shortly.`;
+    } else if (saveOutcome === 'error') {
+      badge.classList.add('warn');
+      statusLine.classList.add('warn');
+      statusLine.textContent = 'Couldn’t confirm this saved';
+      heading.innerHTML = `Almost there, <span>${name}</span>.`;
+      hint.innerHTML = `Something went wrong saving this. If it happens again, call the office directly so nothing gets lost.`;
+    } else {
+      statusLine.textContent = 'Demo mode — not connected';
+      heading.innerHTML = `You're in the queue, <span>${name}</span>.`;
+      hint.innerHTML = `A Paragon agent would reach out by <span>${methodWord}</span> shortly. This preview isn’t connected to live storage right now, so nothing was actually saved.`;
+    }
+  }
+
+  function goTo(step) {
+    steps.forEach(s => s.classList.toggle('active', Number(s.dataset.step) === step));
+    current = step;
+    stepCounter.textContent = `0${Math.min(step, totalSteps)} / 0${totalSteps}`;
+    progressFill.style.width = `${(Math.min(step, totalSteps) / totalSteps) * 100}%`;
+    backBtn.disabled = step === 1;
+    navRow.style.display = step > totalSteps ? 'none' : 'flex';
+    if (step === 5) renderReview();
+    validateStep();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+
+  backBtn.addEventListener('click', () => { if (current > 1) goTo(current - 1); });
+  nextBtn.addEventListener('click', async () => {
+    if (!validateStep()) return;
+    if (current === totalSteps) {
+      nextBtn.disabled = true;
+      nextBtn.textContent = 'Sending…';
+      saveOutcome = await saveLead();
+      goTo(totalSteps + 1);
+      renderDoneStatus();
+      nextBtn.textContent = 'Continue';
+    } else {
+      goTo(current + 1);
+    }
+  });
+
+  goTo(1);
+
+  // --- admin leads panel ---
+  const adminToggle = document.getElementById('adminToggle');
+  const adminPanel = document.getElementById('adminPanel');
+  const adminList = document.getElementById('adminList');
+  const adminStatus = document.getElementById('adminStatus');
+  let adminLoaded = false;
+
+  function formatWhen(iso) {
+    try {
+      const d = new Date(iso);
+      return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ' · ' +
+        d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+    } catch (e) { return ''; }
+  }
+
+  function renderLeads(docs) {
+    if (!docs.length) {
+      adminList.innerHTML = '<div class="admin-empty">No leads yet — submit the form above to test it.</div>';
+      return;
+    }
+    adminList.innerHTML = docs.map(d => {
+      const l = d.data() || {};
+      const specifics = (l.specifics || []).map(s => `${s.label}: ${s.value}`).join(' · ');
+      return `<div class="lead-row">
+        <div>
+          <div class="who">${l.firstName || ''} ${l.lastName || ''} — ${l.coverage || ''}</div>
+          <div class="meta">${l.email || ''} · ${l.phone || ''} · ${specifics}</div>
+        </div>
+        <div class="when">${formatWhen(l.submittedAt)}</div>
+      </div>`;
+    }).join('');
+  }
+
+  async function loadLeads() {
+    if (!dbApi) {
+      adminStatus.textContent = 'not connected';
+      adminList.innerHTML = '<div class="admin-empty">Live storage isn’t connected in this view.</div>';
+      return;
+    }
+    try {
+      adminStatus.textContent = 'live';
+      dbApi.collection('leads').orderBy('submittedAt', 'desc').limit(50).onSnapshot(
+        (snap) => renderLeads(snap.docs),
+        () => { adminStatus.textContent = 'unavailable'; }
+      );
+    } catch (e) {
+      adminStatus.textContent = 'unavailable';
+      adminList.innerHTML = '<div class="admin-empty">Couldn’t load leads right now.</div>';
+    }
+  }
+
+  adminToggle.addEventListener('click', () => {
+    const open = adminPanel.classList.toggle('open');
+    adminToggle.textContent = (open ? 'Hide captured leads ▴' : 'View captured leads ▾');
+    if (open && !adminLoaded) {
+      adminLoaded = true;
+      loadLeads();
+    }
+  });
+})();
+</script>
+
+</body></html>
