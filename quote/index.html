@@ -1,5 +1,4 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"></head><body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"></head><body>
 <title>Paragon Quick Quote</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
@@ -108,6 +107,8 @@
     font-size: 1.02rem; cursor: pointer; display: flex; flex-direction: column; gap: .3rem;
     transition: border-color .15s ease;
   }
+  .chip-icon { color: var(--accent-deep); margin-bottom: .35rem; flex: none; }
+  .chip.selected .chip-icon { color: var(--accent); }
   .chip small { font-family: var(--font-body); font-weight: 400; font-size: .78rem; opacity: .6; }
   .chip:hover { border-color: var(--accent); }
   .chip:focus-visible, .btn:focus-visible, .add-btn:focus-visible, .link-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -122,7 +123,7 @@
   .field-grid.single { grid-template-columns: 1fr; }
   .field { display: flex; flex-direction: column; gap: .4rem; min-width: 0; }
   .field.full { grid-column: 1 / -1; }
-  label { font-size: .76rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; opacity: .65; }
+  label, .field-label { font-size: .76rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; opacity: .65; margin: 0; }
   input[type="text"], input[type="email"], input[type="tel"], input[type="date"], select, input:not([type]) {
     font-family: var(--font-body); font-size: 1.05rem; color: var(--ink); background: transparent;
     border: none; border-bottom: 1.5px solid var(--line); border-radius: 0; padding: .55rem .1rem;
@@ -187,8 +188,19 @@
 
   .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 
+  textarea {
+    font-family: var(--font-body); font-size: 1.05rem; color: var(--ink); background: transparent;
+    border: 1.5px solid var(--line); border-radius: 0; padding: .65rem .7rem; outline: none;
+    width: 100%; min-height: 5rem; resize: vertical; transition: border-color .15s ease;
+  }
+  textarea:focus { border-color: var(--accent); }
+  textarea::placeholder { color: var(--ink); opacity: .32; }
+  .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem 1.1rem; margin-top: .3rem; }
+  .check-grid .consent { margin-top: 0; opacity: 1; }
+  .field-error .field-label { color: var(--danger); opacity: 1; }
+
   @media (max-width: 560px) {
-    .chip-grid, .field-grid, .field-grid.cols3 { grid-template-columns: 1fr; }
+    .chip-grid, .field-grid, .field-grid.cols3, .check-grid { grid-template-columns: 1fr; }
     .topbar { padding-left: 1rem; padding-right: 1rem; }
     main { padding-left: 1rem; padding-right: 1rem; }
   }
@@ -218,24 +230,27 @@
         <h1>What are we covering?</h1>
         <p class="hint">Pick the one that fits best. The next questions change to match.</p>
         <div class="chip-grid" id="coverageChips">
-          <button type="button" class="chip" data-value="Auto">Auto<small>Cars, trucks, motorcycles</small></button>
-          <button type="button" class="chip" data-value="Home">Home<small>Owners, renters, condo</small></button>
-          <button type="button" class="chip" data-value="Bundle">Auto + Home<small>Bundle and save</small></button>
+          <button type="button" class="chip" data-value="Auto"><svg class="chip-icon" viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15v-3l2-5h14l2 5v3"/><path d="M3 15h18v3H3z"/><circle cx="7.5" cy="18" r="1.6" fill="var(--surface)"/><circle cx="16.5" cy="18" r="1.6" fill="var(--surface)"/><path d="M5.5 12h13"/></svg>Auto<small>Cars, trucks, motorcycles</small></button>
+          <button type="button" class="chip" data-value="Home"><svg class="chip-icon" viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>Home<small>Owners, renters, condo</small></button>
+          <button type="button" class="chip" data-value="Bundle"><svg class="chip-icon" viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 10.500l6-5 6 5"/><path d="M4.500 9.500v5h8v-5"/><path d="M9 21v-3l1.200-3h9.600l1.200 3v3"/><path d="M9 18h12v3H9z"/><circle cx="11.500" cy="19.500" r=".6"/><circle cx="18.500" cy="19.500" r=".6"/></svg>Auto + Home<small>Bundle and save</small></button>
+          <button type="button" class="chip" data-value="Life"><svg class="chip-icon" viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5s-8-4.8-8-10.4A4.4 4.4 0 0 1 12 7.6a4.4 4.4 0 0 1 8 2.5c0 5.600-8 10.400-8 10.400z"/></svg>Life<small>Term, whole, universal</small></button>
+          <button type="button" class="chip" data-value="Commercial"><svg class="chip-icon" viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V8l8-4 8 4v12"/><path d="M2.500 20h19"/><path d="M8 11h2M14 11h2M8 15h2M14 15h2"/></svg>Commercial<small>Business and liability</small></button>
         </div>
       </section>
 
       <!-- Step 2: contact, address, optional spouse -->
       <section class="step" data-step="2" id="contactStep">
         <p class="eyebrow">Reaching you</p>
-        <h1>Who are we quoting?</h1>
+        <h1 id="contactHeading">Who are we quoting?</h1>
         <p class="hint">We save this first so your quote is never lost. A real Paragon agent follows up. No auto-dialer.</p>
 
         <div class="field-grid">
-          <div class="field"><label for="firstName">First name</label><input id="firstName" name="firstName" autocomplete="given-name" placeholder="Jordan"></div>
-          <div class="field"><label for="lastName">Last name</label><input id="lastName" name="lastName" autocomplete="family-name" placeholder="Rivera"></div>
+          <div class="field full" id="businessWrap" hidden><label for="businessName">Business name</label><input id="businessName" name="businessName" autocomplete="organization" placeholder="Rivera Landscaping LLC"></div>
+          <div class="field"><label for="firstName" id="lblFirst">First name</label><input id="firstName" name="firstName" autocomplete="given-name" placeholder="Jordan"></div>
+          <div class="field"><label for="lastName" id="lblLast">Last name</label><input id="lastName" name="lastName" autocomplete="family-name" placeholder="Rivera"></div>
           <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" placeholder="jordan@email.com"></div>
-          <div class="field"><label for="phone">Mobile phone</label><input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="(610) 555-0134"></div>
-          <div class="field full"><label for="street">Street address</label><input id="street" name="street" autocomplete="address-line1" placeholder="123 Baltimore Pike"></div>
+          <div class="field"><label for="phone" id="lblPhone">Mobile phone</label><input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="(610) 555-0134"></div>
+          <div class="field full"><label for="street" id="lblStreet">Street address</label><input id="street" name="street" autocomplete="address-line1" placeholder="123 Baltimore Pike"></div>
         </div>
         <div class="field-grid cols3">
           <div class="field"><label for="city">City</label><input id="city" name="city" autocomplete="address-level2" placeholder="Media"></div>
@@ -245,11 +260,11 @@
 
         <button type="button" class="add-btn" id="spouseToggle">+ Add a spouse or partner</button>
         <div class="card" id="spouseCard" hidden>
-          <div class="card-head"><strong>Spouse or partner</strong><button type="button" class="link-btn" id="spouseRemove">Remove</button></div>
+          <div class="card-head"><strong id="spouseTitle">Spouse or partner</strong><button type="button" class="link-btn" id="spouseRemove">Remove</button></div>
           <div class="field-grid">
             <div class="field"><label for="spouseFirst">First name</label><input id="spouseFirst" name="spouseFirst"></div>
             <div class="field"><label for="spouseLast">Last name</label><input id="spouseLast" name="spouseLast"></div>
-            <div class="field full"><label for="spouseEmail">Email (optional)</label><input id="spouseEmail" name="spouseEmail" type="email"></div>
+            <div class="field full" id="spouseEmailWrap"><label for="spouseEmail">Email (optional)</label><input id="spouseEmail" name="spouseEmail" type="email"></div>
           </div>
         </div>
 
@@ -304,15 +319,75 @@
           </div>
         </div>
 
+        <div id="lifeSection" hidden>
+          <h2 class="section-title first">Life insurance</h2>
+          <p class="section-hint">A rough idea is enough. An agent will go over the details and any health questions with you directly.</p>
+          <div class="field-grid">
+            <div class="field">
+              <label for="lifeFor">Who is it for?</label>
+              <select id="lifeFor"><option value="" selected disabled>Choose one</option><option>Just me</option><option>Me and my spouse or partner</option><option>Someone else</option></select>
+            </div>
+            <div class="field">
+              <label for="lifeType">Type</label>
+              <select id="lifeType"><option value="" selected disabled>Choose one</option><option>Term</option><option>Whole life</option><option>Universal</option><option>Not sure</option></select>
+            </div>
+            <div class="field">
+              <label for="lifeAmount">Coverage amount</label>
+              <select id="lifeAmount"><option value="" selected disabled>Choose one</option><option>Under $100,000</option><option>$100,000 to $250,000</option><option>$250,000 to $500,000</option><option>$500,000 to $1,000,000</option><option>Over $1,000,000</option><option>Not sure</option></select>
+            </div>
+            <div class="field">
+              <label for="lifePurpose">What is it for? (optional)</label>
+              <select id="lifePurpose"><option value="" selected>Choose one</option><option>Family income protection</option><option>Mortgage or debt</option><option>Business</option><option>Final expenses</option><option>Other</option></select>
+            </div>
+          </div>
+        </div>
+
+        <div id="commercialSection" hidden>
+          <h2 class="section-title first">The business</h2>
+          <p class="section-hint">A few basics so we can match you with the right markets.</p>
+          <div class="field-grid">
+            <div class="field full"><label for="industry">Industry or type of business</label><input id="industry" placeholder="Landscaping, restaurant, contractor"></div>
+            <div class="field">
+              <label for="employees">Employees</label>
+              <select id="employees"><option value="" selected disabled>Choose one</option><option>Just me</option><option>2 to 5</option><option>6 to 10</option><option>11 to 25</option><option>26 to 50</option><option>Over 50</option></select>
+            </div>
+            <div class="field">
+              <label for="revenue">Annual revenue (optional)</label>
+              <select id="revenue"><option value="" selected>Choose one</option><option>Under $250,000</option><option>$250,000 to $1 million</option><option>$1 million to $5 million</option><option>Over $5 million</option><option>Prefer not to say</option></select>
+            </div>
+            <div class="field full" id="coverageField">
+              <p class="field-label">Coverage you want to look at</p>
+              <div class="check-grid">
+                <label class="consent" for="cov-gl"><input type="checkbox" id="cov-gl" value="General liability"><span>General liability</span></label>
+                <label class="consent" for="cov-prop"><input type="checkbox" id="cov-prop" value="Business property"><span>Business property</span></label>
+                <label class="consent" for="cov-wc"><input type="checkbox" id="cov-wc" value="Workers' comp"><span>Workers' comp</span></label>
+                <label class="consent" for="cov-auto"><input type="checkbox" id="cov-auto" value="Commercial auto"><span>Commercial auto</span></label>
+                <label class="consent" for="cov-prof"><input type="checkbox" id="cov-prof" value="Professional liability"><span>Professional liability</span></label>
+                <label class="consent" for="cov-cyber"><input type="checkbox" id="cov-cyber" value="Cyber"><span>Cyber</span></label>
+                <label class="consent" for="cov-umb"><input type="checkbox" id="cov-umb" value="Umbrella / excess"><span>Umbrella / excess</span></label>
+                <label class="consent" for="cov-unsure"><input type="checkbox" id="cov-unsure" value="Not sure yet"><span>Not sure yet</span></label>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <h2 class="section-title">Current coverage</h2>
         <p class="section-hint">Knowing when your policy renews tells us when to have your quote ready.</p>
         <div class="field-grid">
           <div class="field full">
-            <label for="currentlyInsured">Insured right now?</label>
+            <label for="currentlyInsured" id="lblInsured">Insured right now?</label>
             <select id="currentlyInsured"><option value="" selected disabled>Choose one</option><option>Yes</option><option>No</option><option>Lapsed</option></select>
           </div>
           <div class="field" id="carrierField" hidden><label for="priorCarrier">Current company</label><input id="priorCarrier" placeholder="Erie, Progressive, State Farm"></div>
           <div class="field" id="renewField" hidden><label for="renewalDate">Renewal date</label><input id="renewalDate" type="date"></div>
+        </div>
+
+        <h2 class="section-title">Anything else?</h2>
+        <div class="field-grid single">
+          <div class="field">
+            <label for="extraNotes">Anything else we should know? (optional)</label>
+            <textarea id="extraNotes" maxlength="500" placeholder="Timing, questions, special situations"></textarea>
+          </div>
         </div>
 
         <h2 class="section-title">Follow-up</h2>
@@ -356,12 +431,18 @@
   'use strict';
 
   // ---- Settings ------------------------------------------------------------
-  // Zap 1: creates the applicant + opportunity as soon as contact info is entered.
-  const STAGE1_HOOK_URL = 'https://hooks.zapier.com/hooks/catch/29109447/414l3hb/';
-  // Zap 2: adds vehicles / home details to that applicant as a note. Paste its Catch Hook URL here.
-  const STAGE2_HOOK_URL = '';
-  // EZLynx line-of-business codes. AUTOP comes from Zapier's help text; confirm the Home code in EZLynx.
-  const LOB_CODES = { Auto: 'AUTOP', Home: 'HOME' };
+  // Webhooks. stage1 creates the applicant + opportunity as soon as contact info is entered.
+  // stage2 adds the details (vehicles, home, life, business) to that applicant as a note.
+  // Commercial uses EZLynx's commercial actions, so it needs its own pair. Several URLs can point at
+  // the same Zap if that Zap branches on the applicantType field the form sends.
+  // The Commercial option stays hidden on the live site until its stage1 URL is filled in.
+  const HOOKS = {
+    personal:   { stage1: 'https://hooks.zapier.com/hooks/catch/29109447/414l3hb/', stage2: '' },
+    commercial: { stage1: '', stage2: '' }
+  };
+  // EZLynx line-of-business codes. AUTOP comes from Zapier's help text; confirm HOME and LIFE in EZLynx.
+  // Commercial sends no code (the business details go in the note).
+  const LOB_CODES = { Auto: 'AUTOP', Home: 'HOME', Life: 'LIFE' };
   const SOURCE_NAME = 'Quick Quote form';
   // Leads are only sent from these hosts (or with ?live=1). Anywhere else the page runs as a preview.
   const LIVE_HOSTS = ['breinlinger.co', 'www.breinlinger.co'];
@@ -371,7 +452,7 @@
   const params = new URLSearchParams(location.search);
   const isLive = LIVE_HOSTS.indexOf(location.hostname) !== -1 || params.get('live') === '1';
   const totalSteps = 3;
-  const COVERAGE_LABEL = { Auto: 'Auto', Home: 'Home', Bundle: 'Auto + Home' };
+  const COVERAGE_LABEL = { Auto: 'Auto', Home: 'Home', Bundle: 'Auto + Home', Life: 'Life', Commercial: 'Commercial' };
 
   const state = {
     coverage: null, leadId: uuid(), busy: false,
@@ -418,7 +499,14 @@
     });
   });
 
-  // ---- Step 2: spouse ------------------------------------------------------
+  if (isLive) {
+    $('coverageChips').querySelectorAll('.chip').forEach((chip) => {
+      const type = chip.dataset.value === 'Commercial' ? 'commercial' : 'personal';
+      if (!HOOKS[type].stage1) chip.hidden = true;
+    });
+  }
+
+  // ---- Step 2: contact, spouse ---------------------------------------------
   $('spouseToggle').addEventListener('click', () => {
     $('spouseCard').hidden = false;
     $('spouseToggle').hidden = true;
@@ -429,6 +517,19 @@
     $('spouseCard').hidden = true;
     $('spouseToggle').hidden = false;
   });
+
+  function renderContact() {
+    const biz = isCommercial();
+    $('businessWrap').hidden = !biz;
+    $('contactHeading').textContent = biz ? 'Tell us about the business' : 'Who are we quoting?';
+    $('lblFirst').textContent = biz ? 'Contact first name' : 'First name';
+    $('lblLast').textContent = biz ? 'Contact last name' : 'Last name';
+    $('lblPhone').textContent = biz ? 'Phone' : 'Mobile phone';
+    $('lblStreet').textContent = biz ? 'Business street address' : 'Street address';
+    $('spouseToggle').textContent = biz ? '+ Add a second contact' : '+ Add a spouse or partner';
+    $('spouseTitle').textContent = biz ? 'Second contact' : 'Spouse or partner';
+    $('spouseEmailWrap').hidden = biz;
+  }
 
   // ---- Step 3: vehicles, home, coverage ------------------------------------
   function makeField(id, labelText, opts) {
@@ -495,23 +596,42 @@
   });
 
   $('sameAddress').addEventListener('change', () => { $('homeAltFields').hidden = $('sameAddress').checked; });
-  $('currentlyInsured').addEventListener('change', () => {
-    const insured = $('currentlyInsured').value === 'Yes';
-    $('carrierField').hidden = !insured;
-    $('renewField').hidden = !insured;
-  });
+  $('currentlyInsured').addEventListener('change', updateInsuredFields);
 
   function hasAuto() { return state.coverage === 'Auto' || state.coverage === 'Bundle'; }
   function hasHome() { return state.coverage === 'Home' || state.coverage === 'Bundle'; }
+  function hasLife() { return state.coverage === 'Life'; }
+  function isCommercial() { return state.coverage === 'Commercial'; }
+  function applicantType() { return isCommercial() ? 'commercial' : 'personal'; }
+  function hookUrl(stage) { return HOOKS[applicantType()][stage]; }
+  function commercialCoverages() {
+    return Array.from(document.querySelectorAll('#coverageField input:checked')).map((i) => i.value);
+  }
+
+  function updateInsuredFields() {
+    const insured = $('currentlyInsured').value === 'Yes';
+    $('carrierField').hidden = !insured;
+    $('renewField').hidden = !insured || hasLife();
+  }
+
+  const DETAIL_HEADINGS = {
+    Auto: 'Tell us about your vehicles', Home: 'Tell us about your home',
+    Bundle: 'Your vehicles and your home', Life: 'What kind of life coverage?',
+    Commercial: 'Tell us about the business'
+  };
 
   function renderDetails() {
     $('autoSection').hidden = !hasAuto();
     $('homeSection').hidden = !hasHome();
-    $('homeTitle').textContent = 'Home';
+    $('lifeSection').hidden = !hasLife();
+    $('commercialSection').hidden = !isCommercial();
     $('detailsEyebrow').textContent = COVERAGE_LABEL[state.coverage] + ' details';
-    $('detailsHeading').textContent = state.coverage === 'Auto' ? 'Tell us about your vehicles'
-      : state.coverage === 'Home' ? 'Tell us about your home' : 'Your vehicles and your home';
+    $('detailsHeading').textContent = DETAIL_HEADINGS[state.coverage];
+    $('lblInsured').textContent = hasLife() ? 'Do you have life insurance now?' : 'Insured right now?';
+    // The Home heading is only the first heading when it is the first section shown.
+    $('homeTitle').classList.toggle('first', !hasAuto());
     if (hasAuto() && vehicleCards().length === 0) addVehicle();
+    updateInsuredFields();
   }
 
   // ---- Validation ----------------------------------------------------------
@@ -535,13 +655,14 @@
   function validateContact() {
     clearFlags($('contactStep'));
     const bad = [];
+    if (isCommercial() && !clean($('businessName').value)) bad.push('businessName');
     ['firstName', 'lastName', 'street', 'city', 'state'].forEach((id) => { if (!clean($(id).value)) bad.push(id); });
     if (!emailOk($('email').value)) bad.push('email');
     if (digits($('phone').value).length !== 10) bad.push('phone');
     if (!/^\d{5}$/.test(clean($('zip').value))) bad.push('zip');
     if (!$('spouseCard').hidden) {
       ['spouseFirst', 'spouseLast'].forEach((id) => { if (!clean($(id).value)) bad.push(id); });
-      if (clean($('spouseEmail').value) && !emailOk($('spouseEmail').value)) bad.push('spouseEmail');
+      if (!isCommercial() && clean($('spouseEmail').value) && !emailOk($('spouseEmail').value)) bad.push('spouseEmail');
     }
     let msg = '';
     if (bad.length) msg = 'Check the highlighted fields. Phone needs 10 digits and ZIP needs 5.';
@@ -576,6 +697,14 @@
         if (!/^\d{5}$/.test(clean($('propZip').value))) bad.push('propZip');
       }
     }
+    if (hasLife()) {
+      ['lifeFor', 'lifeType', 'lifeAmount'].forEach((id) => { if (!$(id).value) bad.push(id); });
+    }
+    if (isCommercial()) {
+      if (!clean($('industry').value)) bad.push('industry');
+      if (!$('employees').value) bad.push('employees');
+      if (!commercialCoverages().length) bad.push('coverageField');
+    }
     if (!$('currentlyInsured').value) bad.push('currentlyInsured');
     if (!$('contactMethod').value) bad.push('contactMethod');
     const msg = bad.length ? 'Check the highlighted fields. Years need 4 digits.' : '';
@@ -587,18 +716,23 @@
   // ---- Payloads ------------------------------------------------------------
   function buildStage1() {
     const spouseOn = !$('spouseCard').hidden;
-    const lob = state.coverage === 'Bundle' ? LOB_CODES.Auto + ',' + LOB_CODES.Home : LOB_CODES[state.coverage];
+    const biz = isCommercial();
+    const lob = state.coverage === 'Bundle' ? LOB_CODES.Auto + ',' + LOB_CODES.Home : (LOB_CODES[state.coverage] || '');
     return {
       leadId: state.leadId, stage: '1', source: SOURCE_NAME,
+      applicantType: applicantType(),
+      businessName: biz ? clean($('businessName').value) : '',
       firstName: clean($('firstName').value), lastName: clean($('lastName').value),
       email: clean($('email').value).toLowerCase(), phone: digits($('phone').value),
       street: clean($('street').value), city: clean($('city').value),
       state: $('state').value, zip: clean($('zip').value),
       coverage: state.coverage, lobCode: lob,
-      spouseFirstName: spouseOn ? clean($('spouseFirst').value) : '',
-      spouseLastName: spouseOn ? clean($('spouseLast').value) : '',
-      spouseEmail: spouseOn ? clean($('spouseEmail').value).toLowerCase() : '',
-      spouseRelationship: spouseOn ? 'Spouse' : '',
+      spouseFirstName: spouseOn && !biz ? clean($('spouseFirst').value) : '',
+      spouseLastName: spouseOn && !biz ? clean($('spouseLast').value) : '',
+      spouseEmail: spouseOn && !biz ? clean($('spouseEmail').value).toLowerCase() : '',
+      spouseRelationship: spouseOn && !biz ? 'Spouse' : '',
+      secondaryContactFirstName: spouseOn && biz ? clean($('spouseFirst').value) : '',
+      secondaryContactLastName: spouseOn && biz ? clean($('spouseLast').value) : '',
       submittedAt: new Date().toISOString()
     };
   }
@@ -623,11 +757,14 @@
       : '';
     const insured = $('currentlyInsured').value;
     const carrier = insured === 'Yes' ? clean($('priorCarrier').value) : '';
-    const renewal = insured === 'Yes' ? clean($('renewalDate').value) : '';
+    const renewal = insured === 'Yes' && !hasLife() ? clean($('renewalDate').value) : '';
+    const sel = (id) => { const e = $(id); return e.value ? e.selectedOptions[0].textContent : ''; };
+    const extra = clean($('extraNotes').value);
 
     const lines = [];
     lines.push('Quick Quote form: details added');
     lines.push('Coverage: ' + COVERAGE_LABEL[state.coverage]);
+    if (isCommercial()) lines.push('Business: ' + p1.businessName);
     lines.push('Preferred contact: ' + $('contactMethod').selectedOptions[0].textContent);
     if (vehicles.length) {
       lines.push('');
@@ -643,17 +780,42 @@
       lines.push('Year built: ' + clean($('yearBuilt').value));
       if (clean($('squareFeet').value)) lines.push('Square feet: ' + clean($('squareFeet').value));
     }
+    if (hasLife()) {
+      lines.push('');
+      lines.push('Life:');
+      lines.push('Coverage for: ' + sel('lifeFor'));
+      lines.push('Type: ' + sel('lifeType'));
+      lines.push('Amount: ' + sel('lifeAmount'));
+      if ($('lifePurpose').value) lines.push('Purpose: ' + sel('lifePurpose'));
+    }
+    if (isCommercial()) {
+      lines.push('');
+      lines.push('Business details:');
+      lines.push('Industry: ' + clean($('industry').value));
+      lines.push('Employees: ' + sel('employees'));
+      if ($('revenue').value) lines.push('Annual revenue: ' + sel('revenue'));
+      lines.push('Coverage wanted: ' + commercialCoverages().join(', '));
+    }
     lines.push('');
-    lines.push('Currently insured: ' + insured);
+    lines.push(hasLife() ? 'Currently has life insurance: ' + insured : 'Currently insured: ' + insured);
     if (carrier) lines.push('Current company: ' + carrier);
     if (renewal) lines.push('Renewal date: ' + renewal);
     if (p1.spouseFirstName) {
       lines.push('');
       lines.push('Spouse / partner: ' + p1.spouseFirstName + ' ' + p1.spouseLastName + (p1.spouseEmail ? ' (' + p1.spouseEmail + ')' : ''));
     }
+    if (p1.secondaryContactFirstName) {
+      lines.push('');
+      lines.push('Second contact: ' + p1.secondaryContactFirstName + ' ' + p1.secondaryContactLastName);
+    }
+    if (extra) {
+      lines.push('');
+      lines.push('Notes from the client: ' + extra);
+    }
 
     const out = {
       leadId: state.leadId, stage: '2', source: SOURCE_NAME,
+      applicantType: applicantType(), businessName: p1.businessName,
       firstName: p1.firstName, lastName: p1.lastName, email: p1.email, phone: p1.phone,
       coverage: state.coverage,
       noteTitle: 'Quick Quote details - ' + COVERAGE_LABEL[state.coverage],
@@ -666,6 +828,7 @@
       primaryUse: hasAuto() ? $('primaryUse').value : '',
       currentlyInsured: insured, priorCarrier: carrier, renewalDate: renewal,
       contactMethod: $('contactMethod').value,
+      extraNotes: extra,
       submittedAt: new Date().toISOString()
     };
     vehicles.forEach((v, i) => { out['vehicle' + (i + 1)] = v.text; });
@@ -678,7 +841,7 @@
   async function sendHook(url, data) {
     if (isBot()) return 'skipped';
     if (!isLive) return 'preview';
-    if (!url) return 'skipped';
+    if (!url) return 'missing';
     try {
       await fetch(url, { method: 'POST', mode: 'no-cors', keepalive: true, body: new URLSearchParams(data) });
       return 'sent';
@@ -727,7 +890,7 @@
     if (state.busy) return;
 
     if (current === 1) {
-      if (state.coverage) goTo(2);
+      if (state.coverage) { renderContact(); goTo(2); }
       return;
     }
 
@@ -738,7 +901,7 @@
         nextBtn.disabled = true;
         nextBtn.textContent = 'Saving...';
         state.stage1Payload = buildStage1();
-        state.stage1Result = await sendHook(STAGE1_HOOK_URL, state.stage1Payload);
+        state.stage1Result = await sendHook(hookUrl('stage1'), state.stage1Payload);
         state.stage1Done = true;
         state.busy = false;
         nextBtn.disabled = false;
@@ -754,14 +917,14 @@
       nextBtn.disabled = true;
       nextBtn.textContent = 'Sending...';
       if (state.stage1Result === 'failed') {
-        state.stage1Result = await sendHook(STAGE1_HOOK_URL, state.stage1Payload);
+        state.stage1Result = await sendHook(hookUrl('stage1'), state.stage1Payload);
         if (state.stage1Result === 'sent') await sleep(4000);
       }
-      const r2 = await sendHook(STAGE2_HOOK_URL, buildStage2());
+      const r2 = await sendHook(hookUrl('stage2'), buildStage2());
       let outcome = 'sent';
       if (!isLive) outcome = 'preview';
-      else if (state.stage1Result === 'failed' || r2 === 'failed') outcome = 'error';
-      if (isLive && !STAGE2_HOOK_URL) console.warn('STAGE2_HOOK_URL is empty: vehicle and home details were not sent.');
+      else if (state.stage1Result === 'failed' || state.stage1Result === 'missing' || r2 === 'failed') outcome = 'error';
+      if (isLive && !hookUrl('stage2')) console.warn('HOOKS.' + applicantType() + '.stage2 is empty: the details note was not sent.');
       state.busy = false;
       goTo(4);
       renderDone(outcome);
