@@ -450,7 +450,8 @@
   // --------------------------------------------------------------------------
 
   const params = new URLSearchParams(location.search);
-  const isLive = LIVE_HOSTS.indexOf(location.hostname) !== -1 || params.get('live') === '1';
+  // ?preview=1 forces demo mode on any host: every option is shown and nothing is sent.
+  const isLive = params.get('preview') !== '1' && (LIVE_HOSTS.indexOf(location.hostname) !== -1 || params.get('live') === '1');
   const totalSteps = 3;
   const COVERAGE_LABEL = { Auto: 'Auto', Home: 'Home', Bundle: 'Auto + Home', Life: 'Life', Commercial: 'Commercial' };
 
