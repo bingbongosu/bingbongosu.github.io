@@ -1,19 +1,21 @@
-<!doctype html><html><head><meta charset=utf8><meta name="robots" content="noindex"><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"></head><body>
 <title>Paragon Quick Quote</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');
-
+  /* Layout: one centered column, three steps (coverage, contact, details), Paragon green on near-black / paper */
   :root {
     --ink: #0B0D10;
     --paper: #FAFAF8;
     --surface: #FFFFFF;
     --accent: #03B588;
     --accent-deep: #02795B;
-    --navy: #172A4C;
     --line: #E1E1DC;
     --danger: #990000;
+    --font-display: 'Montserrat', system-ui, sans-serif;
+    --font-body: 'Open Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
   }
-
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --ink: #F2F3F1;
@@ -21,9 +23,9 @@
       --surface: #14171B;
       --accent: #1FE3AC;
       --accent-deep: #03B588;
-      --navy: #3A5A8C;
       --line: #24272C;
       --danger: #E4665F;
+      color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
@@ -32,871 +34,747 @@
     --surface: #14171B;
     --accent: #1FE3AC;
     --accent-deep: #03B588;
-    --navy: #3A5A8C;
     --line: #24272C;
     --danger: #E4665F;
+    color-scheme: dark;
   }
 
   * { box-sizing: border-box; }
-  html, body { height: 100%; }
-
+  [hidden] { display: none !important; }
+  html, body { min-height: 100%; }
   body {
     margin: 0;
     background: var(--paper);
     color: var(--ink);
-    font-family: 'Open Sans', system-ui, -apple-system, sans-serif;
+    font-family: var(--font-body);
+    font-size: 16px;
     -webkit-font-smoothing: antialiased;
     display: flex;
     flex-direction: column;
+    min-height: 100vh;
   }
 
-  .progress-track {
-    height: 4px;
-    width: 100%;
-    background: var(--line);
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-  .progress-fill {
-    height: 100%;
-    width: 20%;
-    background: var(--accent);
-    transition: width 0.4s cubic-bezier(.4,0,.2,1);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .progress-fill { transition: none; }
+  .progress-track { height: 4px; width: 100%; background: var(--line); position: sticky; top: 0; z-index: 10; }
+  .progress-fill { height: 100%; width: 33%; background: var(--accent); transition: width .4s cubic-bezier(.4,0,.2,1); }
+  @media (prefers-reduced-motion: reduce) { .progress-fill { transition: none; } }
+
+  .preview-banner {
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    text-align: center;
+    padding: .55rem 1rem;
+    background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+    border-bottom: 1.5px solid var(--line);
   }
 
   .topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.3rem 1.75rem;
-    max-width: 720px;
-    width: 100%;
-    margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.3rem 1.25rem; max-width: 720px; width: 100%; margin: 0 auto;
   }
-
-  .mark {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-  }
+  .mark { display: flex; align-items: center; gap: .6rem; }
   .mark svg { width: 26px; height: 26px; display: block; }
-  .mark-text {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 800;
-    font-size: 0.92rem;
-    letter-spacing: 0.01em;
-  }
+  .mark-text { font-family: var(--font-display); font-weight: 800; font-size: .92rem; letter-spacing: .01em; }
   .mark-text span {
-    display: block;
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 600;
-    font-size: 0.58rem;
-    letter-spacing: 0.14em;
-    color: var(--accent-deep);
+    display: block; font-family: var(--font-body); font-weight: 600; font-size: .58rem;
+    letter-spacing: .14em; color: var(--accent-deep);
   }
+  .step-counter { font-family: var(--font-mono); font-size: .78rem; opacity: .55; }
 
-  .step-counter {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.78rem;
-    color: var(--ink);
-    opacity: 0.5;
-  }
+  main { flex: 1; display: flex; justify-content: center; padding: 1.5rem 1.25rem 4rem; }
+  .stage { width: 100%; max-width: 640px; min-width: 0; }
 
-  main {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1.5rem 1.5rem 4rem;
-  }
-
-  .stage {
-    width: 100%;
-    max-width: 640px;
-  }
-
-  .step {
-    display: none;
-    animation: rise 0.45s cubic-bezier(.2,.8,.2,1);
-  }
+  .step { display: none; animation: rise .45s cubic-bezier(.2,.8,.2,1); }
   .step.active { display: block; }
-  @keyframes rise {
-    from { opacity: 0; transform: translateY(14px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .step { animation: none; }
-  }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @media (prefers-reduced-motion: reduce) { .step { animation: none; } }
 
   .eyebrow {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.72rem;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent-deep);
-    margin: 0 0 0.9rem;
+    font-family: var(--font-mono); font-size: .72rem; font-weight: 500; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--accent-deep); margin: 0 0 .9rem;
   }
-
   h1 {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 800;
-    font-size: clamp(1.7rem, 4.4vw, 2.5rem);
-    line-height: 1.12;
-    margin: 0 0 0.5rem;
-    text-wrap: balance;
+    font-family: var(--font-display); font-weight: 800; font-size: clamp(1.7rem, 4.4vw, 2.5rem);
+    line-height: 1.12; margin: 0 0 .5rem; text-wrap: balance;
   }
+  .hint { opacity: .65; font-size: 1rem; margin: 0 0 2rem; max-width: 50ch; line-height: 1.55; }
+  .section-title { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; margin: 2.2rem 0 .3rem; }
+  .section-title.first { margin-top: 0; }
+  .section-hint { opacity: .6; font-size: .9rem; margin: 0 0 1.1rem; }
 
-  .hint {
-    color: var(--ink);
-    opacity: 0.62;
-    font-size: 1rem;
-    margin: 0 0 2.1rem;
-    max-width: 46ch;
-  }
-
-  .chip-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.8rem;
-  }
-
+  .chip-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .8rem; }
   .chip {
-    border: 1.5px solid var(--line);
-    background: var(--surface);
-    color: var(--ink);
-    padding: 1.15rem 1.2rem;
-    text-align: left;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    font-size: 1.02rem;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-    transition: border-color 0.15s ease, transform 0.15s ease;
+    border: 1.5px solid var(--line); background: var(--surface); color: var(--ink);
+    padding: 1.15rem 1.2rem; text-align: left; font-family: var(--font-display); font-weight: 700;
+    font-size: 1.02rem; cursor: pointer; display: flex; flex-direction: column; gap: .3rem;
+    transition: border-color .15s ease;
   }
-  .chip small {
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
-    font-size: 0.78rem;
-    opacity: 0.6;
-  }
+  .chip small { font-family: var(--font-body); font-weight: 400; font-size: .78rem; opacity: .6; }
   .chip:hover { border-color: var(--accent); }
-  .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .chip.selected {
-    border-color: var(--accent);
-    background: color-mix(in srgb, var(--accent) 10%, var(--surface));
-  }
+  .chip:focus-visible, .btn:focus-visible, .add-btn:focus-visible, .link-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .chip.selected { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
   .chip.selected::after {
-    content: "Selected";
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 500;
-    font-size: 0.66rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--accent-deep);
+    content: "Selected"; font-family: var(--font-mono); font-weight: 500; font-size: .66rem;
+    letter-spacing: .06em; text-transform: uppercase; color: var(--accent-deep);
   }
 
-  .field-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.3rem 1.1rem;
-  }
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.3rem 1.1rem; }
+  .field-grid.cols3 { grid-template-columns: 2fr 1fr 1fr; margin-top: 1.3rem; }
   .field-grid.single { grid-template-columns: 1fr; }
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
+  .field { display: flex; flex-direction: column; gap: .4rem; min-width: 0; }
   .field.full { grid-column: 1 / -1; }
-  label {
-    font-size: 0.76rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    opacity: 0.6;
-  }
-  input, select {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 1.05rem;
-    color: var(--ink);
-    background: transparent;
-    border: none;
-    border-bottom: 1.5px solid var(--line);
-    padding: 0.55rem 0.1rem;
-    outline: none;
-    transition: border-color 0.15s ease;
+  label { font-size: .76rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; opacity: .65; }
+  input[type="text"], input[type="email"], input[type="tel"], input[type="date"], select, input:not([type]) {
+    font-family: var(--font-body); font-size: 1.05rem; color: var(--ink); background: transparent;
+    border: none; border-bottom: 1.5px solid var(--line); border-radius: 0; padding: .55rem .1rem;
+    outline: none; transition: border-color .15s ease; width: 100%; min-width: 0;
   }
   input:focus, select:focus { border-color: var(--accent); }
-  input::placeholder { color: var(--ink); opacity: 0.32; }
+  input::placeholder { color: var(--ink); opacity: .32; }
+  .field-error input, .field-error select { border-bottom-color: var(--danger); }
+  .field-error label { color: var(--danger); opacity: 1; }
 
-  .stepper {
-    display: flex;
-    border: 1.5px solid var(--line);
-    width: fit-content;
+  .card { border: 1.5px solid var(--line); background: var(--surface); padding: 1.1rem 1.1rem 1.3rem; margin-top: 1.3rem; }
+  .card-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem; }
+  .card-head strong {
+    font-family: var(--font-mono); font-size: .74rem; font-weight: 500; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--accent-deep);
   }
-  .stepper button {
-    width: 2.6rem;
-    height: 2.6rem;
-    border: none;
-    background: var(--surface);
-    color: var(--ink);
-    font-size: 1.1rem;
-    cursor: pointer;
-    font-family: 'Open Sans', sans-serif;
-  }
-  .stepper button:hover { background: var(--line); }
-  .stepper .count {
-    width: 3rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 500;
-    border-left: 1.5px solid var(--line);
-    border-right: 1.5px solid var(--line);
-  }
+  .vehicle + .vehicle { margin-top: .9rem; }
+  #vehicleList { margin-bottom: .9rem; }
 
-  .nav-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 2.4rem;
+  .add-btn {
+    border: 1.5px dashed var(--line); background: transparent; color: var(--ink); padding: .85rem 1rem;
+    width: 100%; cursor: pointer; font-family: var(--font-display); font-weight: 700; font-size: .9rem;
+    margin-top: 1.3rem;
   }
+  #addVehicle { margin-top: 0; }
+  .add-btn:hover { border-color: var(--accent); }
+  .link-btn {
+    background: none; border: none; color: var(--ink); opacity: .65; cursor: pointer;
+    font: inherit; font-size: .85rem; text-decoration: underline; padding: 0;
+  }
+  .link-btn:hover { opacity: 1; }
 
+  .consent { display: flex; gap: .65rem; align-items: flex-start; margin-top: 1.6rem; font-size: .85rem; opacity: .8; line-height: 1.5; text-transform: none; letter-spacing: 0; font-weight: 400; }
+  .consent input { margin-top: .2rem; }
+  .consent.compact { margin-top: 1.3rem; }
+
+  .error { color: var(--danger); font-size: .88rem; margin: 1.2rem 0 0; min-height: 1.3em; }
+
+  .nav-row { display: flex; align-items: center; justify-content: space-between; margin-top: 1.6rem; }
   .btn {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    font-size: 0.95rem;
-    padding: 0.85rem 1.7rem;
-    border: 1.5px solid var(--ink);
-    cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+    font-family: var(--font-display); font-weight: 700; font-size: .95rem; padding: .85rem 1.7rem;
+    border: 1.5px solid var(--ink); cursor: pointer;
+    transition: background .15s ease, color .15s ease, opacity .15s ease;
   }
-  .btn-primary {
-    background: var(--ink);
-    color: var(--paper);
-  }
+  .btn-primary { background: var(--ink); color: var(--paper); }
   .btn-primary:hover { background: var(--accent-deep); border-color: var(--accent-deep); color: #fff; }
-  .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; background: var(--ink); border-color: var(--ink); }
-  .btn-ghost {
-    background: transparent;
-    color: var(--ink);
-    border-color: transparent;
-    opacity: 0.6;
-    padding-left: 0.3rem;
-  }
+  .btn-primary:disabled { opacity: .35; cursor: not-allowed; background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  .btn-ghost { background: transparent; color: var(--ink); border-color: transparent; opacity: .6; padding-left: .3rem; }
   .btn-ghost:hover { opacity: 1; }
   .btn-ghost:disabled { visibility: hidden; }
 
-  .review-list {
-    border-top: 1.5px solid var(--line);
-    margin-top: 0.5rem;
-  }
-  .review-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.85rem 0;
-    border-bottom: 1.5px solid var(--line);
-    font-size: 0.94rem;
-  }
-  .review-row .k { opacity: 0.55; }
-  .review-row .v { font-weight: 600; text-align: right; }
-
-  .consent {
-    display: flex;
-    gap: 0.65rem;
-    align-items: flex-start;
-    margin-top: 1.6rem;
-    font-size: 0.85rem;
-    opacity: 0.75;
-    line-height: 1.5;
-  }
-  .consent input { margin-top: 0.2rem; }
-
-  .done {
-    text-align: center;
-  }
+  .done { text-align: center; }
   .done .badge {
-    width: 3.4rem;
-    height: 3.4rem;
-    border-radius: 50%;
-    background: var(--accent);
-    color: #06110D;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.4rem;
+    width: 3.4rem; height: 3.4rem; border-radius: 50%; background: var(--accent); color: #06110D;
+    display: flex; align-items: center; justify-content: center; margin: 0 auto 1.4rem;
   }
   .done .badge.warn { background: var(--danger); color: #fff; }
   .done .badge svg { width: 1.5rem; height: 1.5rem; }
-  .status-line {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.76rem;
-    letter-spacing: 0.02em;
-    color: var(--accent-deep);
-    margin-top: -1.2rem;
-    margin-bottom: 1.6rem;
-  }
+  .done .hint { margin-left: auto; margin-right: auto; }
+  .status-line { font-family: var(--font-mono); font-size: .76rem; letter-spacing: .02em; color: var(--accent-deep); margin: 0 0 1.4rem; }
   .status-line.warn { color: var(--danger); }
 
-  .fine {
-    font-size: 0.78rem;
-    opacity: 0.5;
-    margin-top: 1.6rem;
-    line-height: 1.5;
-    text-align: center;
-  }
-
-  .admin-toggle {
-    display: block;
-    text-align: center;
-    margin-top: 2.2rem;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.75rem;
-    letter-spacing: 0.03em;
-    color: var(--ink);
-    opacity: 0.45;
-    background: none;
-    border: none;
-    cursor: pointer;
-    width: 100%;
-  }
-  .admin-toggle:hover { opacity: 0.8; }
-
-  .admin-panel {
-    display: none;
-    margin-top: 1.4rem;
-    border: 1.5px solid var(--line);
-    background: var(--surface);
-  }
-  .admin-panel.open { display: block; }
-  .admin-panel-head {
-    padding: 1rem 1.2rem;
-    border-bottom: 1.5px solid var(--line);
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-  }
-  .admin-panel-head h2 {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 0.95rem;
-    margin: 0;
-  }
-  .admin-panel-head span {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.7rem;
-    opacity: 0.5;
-  }
-  .lead-row {
-    padding: 0.9rem 1.2rem;
-    border-bottom: 1.5px solid var(--line);
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    font-size: 0.86rem;
-  }
-  .lead-row:last-child { border-bottom: none; }
-  .lead-row .who { font-weight: 700; }
-  .lead-row .meta { opacity: 0.55; font-size: 0.78rem; }
-  .lead-row .when { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; opacity: 0.45; white-space: nowrap; }
-  .admin-empty {
-    padding: 1.6rem 1.2rem;
-    text-align: center;
-    font-size: 0.86rem;
-    opacity: 0.55;
-  }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 
   @media (max-width: 560px) {
-    .chip-grid { grid-template-columns: 1fr; }
-    .field-grid { grid-template-columns: 1fr; }
-    .field-grid .field.half { grid-column: 1 / -1; }
-    .lead-row { flex-direction: column; gap: 0.2rem; }
+    .chip-grid, .field-grid, .field-grid.cols3 { grid-template-columns: 1fr; }
+    .topbar { padding-left: 1rem; padding-right: 1rem; }
+    main { padding-left: 1rem; padding-right: 1rem; }
   }
 </style>
 
 <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+<div class="preview-banner" id="previewBanner" hidden>Preview. Nothing you enter on this page is sent anywhere.</div>
 
 <div class="topbar">
   <div class="mark">
-    <svg viewBox="0 0 40 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 40 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <path d="M20 2L38 34H2L20 2Z" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/>
       <path d="M13 21H27" stroke="currentColor" stroke-width="2.6"/>
     </svg>
     <div class="mark-text">PARAGON<span>INSURANCE GROUP</span></div>
   </div>
-  <div class="step-counter" id="stepCounter">01 / 05</div>
+  <div class="step-counter" id="stepCounter">01 / 03</div>
 </div>
 
 <main>
   <div class="stage">
+    <form id="quoteForm" novalidate autocomplete="on">
 
-    <form id="quoteForm">
-      <!-- Step 1: coverage type -->
-      <section class="step active" data-step="1">
+      <!-- Step 1: coverage -->
+      <section class="step active" data-step="1" id="coverageStep">
         <p class="eyebrow">Quick Quote</p>
         <h1>What are we covering?</h1>
-        <p class="hint">Pick the one that fits best — we'll tailor the next few questions to it.</p>
+        <p class="hint">Pick the one that fits best. The next questions change to match.</p>
         <div class="chip-grid" id="coverageChips">
           <button type="button" class="chip" data-value="Auto">Auto<small>Cars, trucks, motorcycles</small></button>
           <button type="button" class="chip" data-value="Home">Home<small>Owners, renters, condo</small></button>
           <button type="button" class="chip" data-value="Bundle">Auto + Home<small>Bundle and save</small></button>
-          <button type="button" class="chip" data-value="Business">Business<small>Commercial &amp; liability</small></button>
         </div>
       </section>
 
-      <!-- Step 2: specifics (dynamic) -->
-      <section class="step" data-step="2">
-        <p class="eyebrow" id="specificsEyebrow">Almost there</p>
-        <h1 id="specificsHeading">A couple specifics</h1>
-        <p class="hint" id="specificsHint">Rough numbers are fine — nothing here is final.</p>
-        <div class="field-grid" id="specificsFields"></div>
-      </section>
-
-      <!-- Step 3: contact info -->
-      <section class="step" data-step="3">
+      <!-- Step 2: contact, address, optional spouse -->
+      <section class="step" data-step="2" id="contactStep">
         <p class="eyebrow">Reaching you</p>
-        <h1>Where should quotes go?</h1>
-        <p class="hint">No spam, no auto-dialer — a real Paragon agent follows up.</p>
+        <h1>Who are we quoting?</h1>
+        <p class="hint">We save this first so your quote is never lost. A real Paragon agent follows up. No auto-dialer.</p>
+
         <div class="field-grid">
-          <div class="field">
-            <label for="firstName">First name</label>
-            <input id="firstName" name="firstName" placeholder="Jordan" required>
-          </div>
-          <div class="field">
-            <label for="lastName">Last name</label>
-            <input id="lastName" name="lastName" placeholder="Rivera" required>
-          </div>
-          <div class="field">
-            <label for="email">Email</label>
-            <input id="email" name="email" type="email" placeholder="jordan@email.com" required>
-          </div>
-          <div class="field">
-            <label for="phone">Phone</label>
-            <input id="phone" name="phone" type="tel" placeholder="(610) 555-0134" required>
-          </div>
-          <div class="field full">
-            <label for="zip">ZIP code</label>
-            <input id="zip" name="zip" inputmode="numeric" maxlength="5" placeholder="19063" required>
+          <div class="field"><label for="firstName">First name</label><input id="firstName" name="firstName" autocomplete="given-name" placeholder="Jordan"></div>
+          <div class="field"><label for="lastName">Last name</label><input id="lastName" name="lastName" autocomplete="family-name" placeholder="Rivera"></div>
+          <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" placeholder="jordan@email.com"></div>
+          <div class="field"><label for="phone">Mobile phone</label><input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="(610) 555-0134"></div>
+          <div class="field full"><label for="street">Street address</label><input id="street" name="street" autocomplete="address-line1" placeholder="123 Baltimore Pike"></div>
+        </div>
+        <div class="field-grid cols3">
+          <div class="field"><label for="city">City</label><input id="city" name="city" autocomplete="address-level2" placeholder="Media"></div>
+          <div class="field"><label for="state">State</label><select id="state" name="state" autocomplete="address-level1"></select></div>
+          <div class="field"><label for="zip">ZIP code</label><input id="zip" name="zip" inputmode="numeric" maxlength="5" autocomplete="postal-code" placeholder="19063"></div>
+        </div>
+
+        <button type="button" class="add-btn" id="spouseToggle">+ Add a spouse or partner</button>
+        <div class="card" id="spouseCard" hidden>
+          <div class="card-head"><strong>Spouse or partner</strong><button type="button" class="link-btn" id="spouseRemove">Remove</button></div>
+          <div class="field-grid">
+            <div class="field"><label for="spouseFirst">First name</label><input id="spouseFirst" name="spouseFirst"></div>
+            <div class="field"><label for="spouseLast">Last name</label><input id="spouseLast" name="spouseLast"></div>
+            <div class="field full"><label for="spouseEmail">Email (optional)</label><input id="spouseEmail" name="spouseEmail" type="email"></div>
           </div>
         </div>
-      </section>
 
-      <!-- Step 4: preferences -->
-      <section class="step" data-step="4">
-        <p class="eyebrow">Last one</p>
-        <h1>How should we follow up?</h1>
-        <p class="hint">We'll match your preference where we can.</p>
-        <div class="chip-grid" id="contactChips">
-          <button type="button" class="chip" data-value="Call">Call me<small>Fastest turnaround</small></button>
-          <button type="button" class="chip" data-value="Text">Text me<small>Quick and quiet</small></button>
-          <button type="button" class="chip" data-value="Email">Email me<small>I'll read on my time</small></button>
-          <button type="button" class="chip" data-value="Either">No preference<small>Whatever's easiest</small></button>
-        </div>
-      </section>
-
-      <!-- Step 5: review -->
-      <section class="step" data-step="5">
-        <p class="eyebrow">Review</p>
-        <h1>Ready to send?</h1>
-        <p class="hint">Check the details below — you can jump back to fix anything.</p>
-        <div class="review-list" id="reviewList"></div>
-        <label class="consent">
-          <input type="checkbox" id="consent" required>
+        <label class="consent" for="consent">
+          <input type="checkbox" id="consent">
           <span>I agree to be contacted by Paragon Insurance Group about this request.</span>
         </label>
+        <p class="error" id="contactError" role="alert"></p>
+      </section>
+
+      <!-- Step 3: details -->
+      <section class="step" data-step="3" id="detailsStep">
+        <p class="eyebrow" id="detailsEyebrow">Details</p>
+        <h1 id="detailsHeading">A few details</h1>
+        <p class="hint">Your contact info is already saved. Rough answers are fine. Add as many as you need and it all goes on the same quote.</p>
+
+        <div id="autoSection" hidden>
+          <h2 class="section-title first">Vehicles</h2>
+          <p class="section-hint">Add every vehicle you want quoted. A VIN is optional but speeds things up.</p>
+          <div id="vehicleList"></div>
+          <button type="button" class="add-btn" id="addVehicle">+ Add another vehicle</button>
+          <div class="field-grid single" style="margin-top:1.3rem">
+            <div class="field">
+              <label for="primaryUse">Main use of the vehicles</label>
+              <select id="primaryUse"><option value="" selected disabled>Choose one</option><option>Commuting</option><option>Pleasure</option><option>Business</option></select>
+            </div>
+          </div>
+        </div>
+
+        <div id="homeSection" hidden>
+          <h2 class="section-title" id="homeTitle">Home</h2>
+          <p class="section-hint">The basics are enough to start a quote.</p>
+          <div class="field-grid">
+            <div class="field">
+              <label for="propertyType">Own, rent or condo</label>
+              <select id="propertyType"><option value="" selected disabled>Choose one</option><option>Own</option><option>Rent</option><option>Condo</option></select>
+            </div>
+            <div class="field"><label for="yearBuilt">Year built (approx.)</label><input id="yearBuilt" inputmode="numeric" maxlength="4" placeholder="1998"></div>
+            <div class="field full"><label for="squareFeet">Square feet (optional)</label><input id="squareFeet" inputmode="numeric" placeholder="1800"></div>
+          </div>
+          <label class="consent compact" for="sameAddress">
+            <input type="checkbox" id="sameAddress" checked>
+            <span>The home is at the address I gave on the last step.</span>
+          </label>
+          <div id="homeAltFields" hidden>
+            <div class="field-grid" style="margin-top:1.3rem"><div class="field full"><label for="propStreet">Home street address</label><input id="propStreet"></div></div>
+            <div class="field-grid cols3">
+              <div class="field"><label for="propCity">City</label><input id="propCity"></div>
+              <div class="field"><label for="propState">State</label><select id="propState"></select></div>
+              <div class="field"><label for="propZip">ZIP code</label><input id="propZip" inputmode="numeric" maxlength="5"></div>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="section-title">Current coverage</h2>
+        <p class="section-hint">Knowing when your policy renews tells us when to have your quote ready.</p>
+        <div class="field-grid">
+          <div class="field full">
+            <label for="currentlyInsured">Insured right now?</label>
+            <select id="currentlyInsured"><option value="" selected disabled>Choose one</option><option>Yes</option><option>No</option><option>Lapsed</option></select>
+          </div>
+          <div class="field" id="carrierField" hidden><label for="priorCarrier">Current company</label><input id="priorCarrier" placeholder="Erie, Progressive, State Farm"></div>
+          <div class="field" id="renewField" hidden><label for="renewalDate">Renewal date</label><input id="renewalDate" type="date"></div>
+        </div>
+
+        <h2 class="section-title">Follow-up</h2>
+        <div class="field-grid single">
+          <div class="field">
+            <label for="contactMethod">How should we reach you?</label>
+            <select id="contactMethod">
+              <option value="" selected disabled>Choose one</option>
+              <option value="Call">Call me</option>
+              <option value="Text">Text me</option>
+              <option value="Email">Email me</option>
+              <option value="Either">No preference</option>
+            </select>
+          </div>
+        </div>
+        <p class="error" id="detailsError" role="alert"></p>
       </section>
 
       <!-- Done -->
-      <section class="step done" data-step="6">
+      <section class="step done" data-step="4" id="doneStep">
         <div class="badge" id="doneBadge">
-          <svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <p class="status-line" id="statusLine">Saving…</p>
-        <h1 id="doneHeading">You're in the queue, <span id="doneName">friend</span>.</h1>
-        <p class="hint" style="margin-left:auto;margin-right:auto;" id="doneHint">A Paragon agent will reach out by <span id="doneMethod">your preferred method</span> shortly.</p>
+        <p class="status-line" id="statusLine"></p>
+        <h1 id="doneHeading"></h1>
+        <p class="hint" id="doneHint"></p>
       </section>
 
+      <div class="hp" aria-hidden="true"><label for="website">Website</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
+
       <div class="nav-row" id="navRow">
-        <button type="button" class="btn btn-ghost" id="backBtn">Back</button>
+        <button type="button" class="btn btn-ghost" id="backBtn" disabled>Back</button>
         <button type="button" class="btn btn-primary" id="nextBtn" disabled>Continue</button>
       </div>
     </form>
-
-    <button type="button" class="admin-toggle" id="adminToggle">View captured leads ▾</button>
-    <div class="admin-panel" id="adminPanel">
-      <div class="admin-panel-head">
-        <h2>Captured leads</h2>
-        <span id="adminStatus">connecting…</span>
-      </div>
-      <div id="adminList"><div class="admin-empty">Loading…</div></div>
-    </div>
-
-    <p class="fine">Submissions save to a live store attached to this page — durable across reloads, visible to anyone signed in to your Claude organization who opens this link (this platform has no way to let the public write without also letting them read, so this only works as an internal test, not the embed for the live site). Each submission is also sent to a Zapier hook that creates a lead in EZLynx, so use made-up test details only if you don't want a real lead created.</p>
   </div>
 </main>
 
 <script>
 (function () {
-  const state = { coverage: null, contactMethod: null, specifics: {} };
-  const totalSteps = 5;
+  'use strict';
+
+  // ---- Settings ------------------------------------------------------------
+  // Zap 1: creates the applicant + opportunity as soon as contact info is entered.
+  const STAGE1_HOOK_URL = 'https://hooks.zapier.com/hooks/catch/29109447/414l3hb/';
+  // Zap 2: adds vehicles / home details to that applicant as a note. Paste its Catch Hook URL here.
+  const STAGE2_HOOK_URL = '';
+  // EZLynx line-of-business codes. AUTOP comes from Zapier's help text; confirm the Home code in EZLynx.
+  const LOB_CODES = { Auto: 'AUTOP', Home: 'HOME' };
+  const SOURCE_NAME = 'Quick Quote form';
+  // Leads are only sent from these hosts (or with ?live=1). Anywhere else the page runs as a preview.
+  const LIVE_HOSTS = ['breinlinger.co', 'www.breinlinger.co'];
+  const MAX_VEHICLES = 6;
+  // --------------------------------------------------------------------------
+
+  const params = new URLSearchParams(location.search);
+  const isLive = LIVE_HOSTS.indexOf(location.hostname) !== -1 || params.get('live') === '1';
+  const totalSteps = 3;
+  const COVERAGE_LABEL = { Auto: 'Auto', Home: 'Home', Bundle: 'Auto + Home' };
+
+  const state = {
+    coverage: null, leadId: uuid(), busy: false,
+    stage1Payload: null, stage1Done: false, stage1Result: null
+  };
   let current = 1;
-  let dbApi = null;
-  let saveOutcome = null; // 'saved' | 'sent' | 'unavailable' | 'error'
-  const ZAPIER_HOOK_URL = 'https://hooks.zapier.com/hooks/catch/29109447/414l3hb/';
+  let vehicleSeq = 0;
+
+  const $ = (id) => document.getElementById(id);
+  const clean = (v) => String(v == null ? '' : v).trim();
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  function uuid() {
+    try { if (window.crypto && crypto.randomUUID) return crypto.randomUUID(); } catch (e) {}
+    return 'lead-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+  }
+  function digits(v) {
+    let d = clean(v).replace(/\D/g, '');
+    if (d.length === 11 && d[0] === '1') d = d.slice(1);
+    return d;
+  }
+  const emailOk = (v) => /^\S+@\S+\.\S+$/.test(clean(v));
 
   const steps = Array.from(document.querySelectorAll('.step'));
-  const progressFill = document.getElementById('progressFill');
-  const stepCounter = document.getElementById('stepCounter');
-  const backBtn = document.getElementById('backBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  const navRow = document.getElementById('navRow');
+  const backBtn = $('backBtn');
+  const nextBtn = $('nextBtn');
 
-  // --- db capability wiring ---
-  (async function initDb() {
-    try {
-      if (window.claude && typeof window.claude.use === 'function') {
-        dbApi = await window.claude.use('db');
-      }
-    } catch (e) {
-      dbApi = null;
+  // ---- State dropdowns -----------------------------------------------------
+  const US_STATES = 'AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY'.split(' ');
+  function fillStates(sel, selected) {
+    sel.innerHTML = '<option value="" disabled>State</option>' +
+      US_STATES.map((s) => '<option value="' + s + '">' + s + '</option>').join('');
+    sel.value = selected || '';
+  }
+  fillStates($('state'), 'PA');
+  fillStates($('propState'), 'PA');
+
+  // ---- Step 1: coverage ----------------------------------------------------
+  $('coverageChips').querySelectorAll('.chip').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      $('coverageChips').querySelectorAll('.chip').forEach((c) => c.classList.remove('selected'));
+      chip.classList.add('selected');
+      state.coverage = chip.dataset.value;
+      nextBtn.disabled = false;
+    });
+  });
+
+  // ---- Step 2: spouse ------------------------------------------------------
+  $('spouseToggle').addEventListener('click', () => {
+    $('spouseCard').hidden = false;
+    $('spouseToggle').hidden = true;
+    $('spouseFirst').focus();
+  });
+  $('spouseRemove').addEventListener('click', () => {
+    ['spouseFirst', 'spouseLast', 'spouseEmail'].forEach((id) => { $(id).value = ''; });
+    $('spouseCard').hidden = true;
+    $('spouseToggle').hidden = false;
+  });
+
+  // ---- Step 3: vehicles, home, coverage ------------------------------------
+  function makeField(id, labelText, opts) {
+    const wrap = document.createElement('div');
+    wrap.className = 'field' + (opts.full ? ' full' : '');
+    const label = document.createElement('label');
+    label.htmlFor = id;
+    label.textContent = labelText;
+    const input = document.createElement('input');
+    input.id = id;
+    input.type = 'text';
+    input.className = opts.cls;
+    if (opts.placeholder) input.placeholder = opts.placeholder;
+    if (opts.maxLength) input.maxLength = opts.maxLength;
+    if (opts.inputMode) input.inputMode = opts.inputMode;
+    wrap.append(label, input);
+    return wrap;
+  }
+
+  function vehicleCards() { return Array.from($('vehicleList').children); }
+
+  function renumberVehicles() {
+    const cards = vehicleCards();
+    cards.forEach((card, i) => {
+      card.querySelector('strong').textContent = 'Vehicle ' + (i + 1);
+      card.querySelector('.link-btn').hidden = cards.length === 1;
+    });
+    $('addVehicle').hidden = cards.length >= MAX_VEHICLES;
+  }
+
+  function addVehicle() {
+    if (vehicleCards().length >= MAX_VEHICLES) return;
+    const n = ++vehicleSeq;
+    const card = document.createElement('div');
+    card.className = 'card vehicle';
+
+    const head = document.createElement('div');
+    head.className = 'card-head';
+    const title = document.createElement('strong');
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'link-btn';
+    remove.textContent = 'Remove';
+    remove.addEventListener('click', () => { card.remove(); renumberVehicles(); });
+    head.append(title, remove);
+
+    const grid = document.createElement('div');
+    grid.className = 'field-grid';
+    grid.append(
+      makeField('veh' + n + '-year', 'Year', { cls: 'v-year', placeholder: '2021', maxLength: 4, inputMode: 'numeric' }),
+      makeField('veh' + n + '-make', 'Make', { cls: 'v-make', placeholder: 'Honda' }),
+      makeField('veh' + n + '-model', 'Model', { cls: 'v-model', placeholder: 'CR-V' }),
+      makeField('veh' + n + '-vin', 'VIN (optional)', { cls: 'v-vin', placeholder: '17 characters', maxLength: 17 })
+    );
+    card.append(head, grid);
+    $('vehicleList').appendChild(card);
+    renumberVehicles();
+  }
+  $('addVehicle').addEventListener('click', () => {
+    addVehicle();
+    const cards = vehicleCards();
+    const last = cards[cards.length - 1];
+    if (last) last.querySelector('.v-year').focus();
+  });
+
+  $('sameAddress').addEventListener('change', () => { $('homeAltFields').hidden = $('sameAddress').checked; });
+  $('currentlyInsured').addEventListener('change', () => {
+    const insured = $('currentlyInsured').value === 'Yes';
+    $('carrierField').hidden = !insured;
+    $('renewField').hidden = !insured;
+  });
+
+  function hasAuto() { return state.coverage === 'Auto' || state.coverage === 'Bundle'; }
+  function hasHome() { return state.coverage === 'Home' || state.coverage === 'Bundle'; }
+
+  function renderDetails() {
+    $('autoSection').hidden = !hasAuto();
+    $('homeSection').hidden = !hasHome();
+    $('homeTitle').textContent = 'Home';
+    $('detailsEyebrow').textContent = COVERAGE_LABEL[state.coverage] + ' details';
+    $('detailsHeading').textContent = state.coverage === 'Auto' ? 'Tell us about your vehicles'
+      : state.coverage === 'Home' ? 'Tell us about your home' : 'Your vehicles and your home';
+    if (hasAuto() && vehicleCards().length === 0) addVehicle();
+  }
+
+  // ---- Validation ----------------------------------------------------------
+  $('quoteForm').addEventListener('input', clearFieldError);
+  $('quoteForm').addEventListener('change', clearFieldError);
+  function clearFieldError(e) {
+    const f = e.target.closest && e.target.closest('.field');
+    if (f) f.classList.remove('field-error');
+  }
+  function flag(ids) {
+    ids.forEach((id) => {
+      const f = $(id) && $(id).closest('.field');
+      if (f) f.classList.add('field-error');
+    });
+    if (ids.length && $(ids[0])) $(ids[0]).focus();
+  }
+  function clearFlags(root) {
+    root.querySelectorAll('.field-error').forEach((f) => f.classList.remove('field-error'));
+  }
+
+  function validateContact() {
+    clearFlags($('contactStep'));
+    const bad = [];
+    ['firstName', 'lastName', 'street', 'city', 'state'].forEach((id) => { if (!clean($(id).value)) bad.push(id); });
+    if (!emailOk($('email').value)) bad.push('email');
+    if (digits($('phone').value).length !== 10) bad.push('phone');
+    if (!/^\d{5}$/.test(clean($('zip').value))) bad.push('zip');
+    if (!$('spouseCard').hidden) {
+      ['spouseFirst', 'spouseLast'].forEach((id) => { if (!clean($(id).value)) bad.push(id); });
+      if (clean($('spouseEmail').value) && !emailOk($('spouseEmail').value)) bad.push('spouseEmail');
     }
-  })();
+    let msg = '';
+    if (bad.length) msg = 'Check the highlighted fields. Phone needs 10 digits and ZIP needs 5.';
+    else if (!$('consent').checked) msg = 'Tick the box so we can contact you about this quote.';
+    $('contactError').textContent = msg;
+    if (bad.length) flag(bad);
+    return !msg;
+  }
 
-  async function saveLead() {
-    const cfg = specificsConfig[state.coverage];
-    const lead = {
-      coverage: state.coverage,
-      specifics: cfg.fields.map(f => ({ label: f.label, value: state.specifics[f.id] })),
-      firstName: document.getElementById('firstName').value,
-      lastName: document.getElementById('lastName').value,
-      email: document.getElementById('email').value,
-      phone: document.getElementById('phone').value,
-      zip: document.getElementById('zip').value,
-      contactMethod: state.contactMethod,
+  function validateDetails() {
+    clearFlags($('detailsStep'));
+    const bad = [];
+    const maxYear = new Date().getFullYear() + 1;
+    if (hasAuto()) {
+      vehicleCards().forEach((card) => {
+        const y = card.querySelector('.v-year');
+        const yn = Number(clean(y.value));
+        if (!/^\d{4}$/.test(clean(y.value)) || yn < 1950 || yn > maxYear) bad.push(y.id);
+        const make = card.querySelector('.v-make');
+        const model = card.querySelector('.v-model');
+        if (!clean(make.value)) bad.push(make.id);
+        if (!clean(model.value)) bad.push(model.id);
+      });
+      if (!$('primaryUse').value) bad.push('primaryUse');
+    }
+    if (hasHome()) {
+      if (!$('propertyType').value) bad.push('propertyType');
+      const yb = clean($('yearBuilt').value);
+      if (!/^\d{4}$/.test(yb) || Number(yb) < 1700 || Number(yb) > maxYear) bad.push('yearBuilt');
+      if (!$('sameAddress').checked) {
+        ['propStreet', 'propCity', 'propState'].forEach((id) => { if (!clean($(id).value)) bad.push(id); });
+        if (!/^\d{5}$/.test(clean($('propZip').value))) bad.push('propZip');
+      }
+    }
+    if (!$('currentlyInsured').value) bad.push('currentlyInsured');
+    if (!$('contactMethod').value) bad.push('contactMethod');
+    const msg = bad.length ? 'Check the highlighted fields. Years need 4 digits.' : '';
+    $('detailsError').textContent = msg;
+    if (bad.length) flag(bad);
+    return !msg;
+  }
+
+  // ---- Payloads ------------------------------------------------------------
+  function buildStage1() {
+    const spouseOn = !$('spouseCard').hidden;
+    const lob = state.coverage === 'Bundle' ? LOB_CODES.Auto + ',' + LOB_CODES.Home : LOB_CODES[state.coverage];
+    return {
+      leadId: state.leadId, stage: '1', source: SOURCE_NAME,
+      firstName: clean($('firstName').value), lastName: clean($('lastName').value),
+      email: clean($('email').value).toLowerCase(), phone: digits($('phone').value),
+      street: clean($('street').value), city: clean($('city').value),
+      state: $('state').value, zip: clean($('zip').value),
+      coverage: state.coverage, lobCode: lob,
+      spouseFirstName: spouseOn ? clean($('spouseFirst').value) : '',
+      spouseLastName: spouseOn ? clean($('spouseLast').value) : '',
+      spouseEmail: spouseOn ? clean($('spouseEmail').value).toLowerCase() : '',
+      spouseRelationship: spouseOn ? 'Spouse' : '',
       submittedAt: new Date().toISOString()
     };
-    // Send to Zapier (Catch Hook -> EZLynx lead). Form-encoded + no-cors avoids a CORS preflight;
-    // the response is opaque, so a resolved fetch means "sent", not "confirmed".
-    let webhookSent = false;
+  }
+
+  function collectVehicles() {
+    return vehicleCards().map((card) => {
+      const year = clean(card.querySelector('.v-year').value);
+      const make = clean(card.querySelector('.v-make').value);
+      const model = clean(card.querySelector('.v-model').value);
+      const vin = clean(card.querySelector('.v-vin').value).toUpperCase();
+      return { text: year + ' ' + make + ' ' + model + (vin ? ' (VIN ' + vin + ')' : '') };
+    });
+  }
+
+  function buildStage2() {
+    const p1 = state.stage1Payload;
+    const vehicles = hasAuto() ? collectVehicles() : [];
+    const sameAddr = $('sameAddress').checked;
+    const homeAddress = hasHome()
+      ? (sameAddr ? p1.street + ', ' + p1.city + ', ' + p1.state + ' ' + p1.zip
+        : clean($('propStreet').value) + ', ' + clean($('propCity').value) + ', ' + $('propState').value + ' ' + clean($('propZip').value))
+      : '';
+    const insured = $('currentlyInsured').value;
+    const carrier = insured === 'Yes' ? clean($('priorCarrier').value) : '';
+    const renewal = insured === 'Yes' ? clean($('renewalDate').value) : '';
+
+    const lines = [];
+    lines.push('Quick Quote form: details added');
+    lines.push('Coverage: ' + COVERAGE_LABEL[state.coverage]);
+    lines.push('Preferred contact: ' + $('contactMethod').selectedOptions[0].textContent);
+    if (vehicles.length) {
+      lines.push('');
+      lines.push('Vehicles (' + vehicles.length + '):');
+      vehicles.forEach((v, i) => lines.push((i + 1) + '. ' + v.text));
+      lines.push('Main use: ' + $('primaryUse').value);
+    }
+    if (hasHome()) {
+      lines.push('');
+      lines.push('Home:');
+      lines.push('Property address: ' + homeAddress);
+      lines.push('Own / rent / condo: ' + $('propertyType').value);
+      lines.push('Year built: ' + clean($('yearBuilt').value));
+      if (clean($('squareFeet').value)) lines.push('Square feet: ' + clean($('squareFeet').value));
+    }
+    lines.push('');
+    lines.push('Currently insured: ' + insured);
+    if (carrier) lines.push('Current company: ' + carrier);
+    if (renewal) lines.push('Renewal date: ' + renewal);
+    if (p1.spouseFirstName) {
+      lines.push('');
+      lines.push('Spouse / partner: ' + p1.spouseFirstName + ' ' + p1.spouseLastName + (p1.spouseEmail ? ' (' + p1.spouseEmail + ')' : ''));
+    }
+
+    const out = {
+      leadId: state.leadId, stage: '2', source: SOURCE_NAME,
+      firstName: p1.firstName, lastName: p1.lastName, email: p1.email, phone: p1.phone,
+      coverage: state.coverage,
+      noteTitle: 'Quick Quote details - ' + COVERAGE_LABEL[state.coverage],
+      noteBody: lines.join('\n'),
+      vehicleCount: String(vehicles.length),
+      propertyAddress: homeAddress,
+      propertyType: hasHome() ? $('propertyType').value : '',
+      yearBuilt: hasHome() ? clean($('yearBuilt').value) : '',
+      squareFeet: hasHome() ? clean($('squareFeet').value) : '',
+      primaryUse: hasAuto() ? $('primaryUse').value : '',
+      currentlyInsured: insured, priorCarrier: carrier, renewalDate: renewal,
+      contactMethod: $('contactMethod').value,
+      submittedAt: new Date().toISOString()
+    };
+    vehicles.forEach((v, i) => { out['vehicle' + (i + 1)] = v.text; });
+    return out;
+  }
+
+  // ---- Sending -------------------------------------------------------------
+  const isBot = () => clean($('website').value) !== '';
+
+  async function sendHook(url, data) {
+    if (isBot()) return 'skipped';
+    if (!isLive) return 'preview';
+    if (!url) return 'skipped';
     try {
-      const body = new URLSearchParams({
-        firstName: lead.firstName,
-        lastName: lead.lastName,
-        email: lead.email,
-        phone: lead.phone,
-        zip: lead.zip,
-        coverage: lead.coverage || '',
-        contactMethod: lead.contactMethod || '',
-        details: lead.specifics.map(s => `${s.label}: ${s.value ?? ''}`).join('; '),
-        submittedAt: lead.submittedAt,
-        source: 'Paragon Quick Quote form'
-      });
-      await fetch(ZAPIER_HOOK_URL, { method: 'POST', mode: 'no-cors', body });
-      webhookSent = true;
+      await fetch(url, { method: 'POST', mode: 'no-cors', keepalive: true, body: new URLSearchParams(data) });
+      return 'sent';
     } catch (e) {
-      webhookSent = false;
-    }
-
-    let dbSaved = false;
-    let dbFailed = false;
-    if (dbApi) {
-      try {
-        await dbApi.collection('leads').add(lead);
-        dbSaved = true;
-      } catch (e) {
-        dbFailed = true;
-      }
-    }
-
-    if (dbSaved) return 'saved';
-    if (webhookSent) return 'sent';
-    return dbFailed ? 'error' : 'unavailable';
-  }
-
-  const specificsConfig = {
-    Auto: {
-      eyebrow: 'Auto details',
-      heading: 'Tell us about the vehicles',
-      hint: 'Rough numbers are fine — nothing here is final.',
-      fields: [
-        { type: 'stepper', id: 'vehicleCount', label: 'Vehicles to insure', min: 1, max: 6, value: 1 },
-        { type: 'select', id: 'primaryUse', label: 'Primary use', options: ['Commuting', 'Pleasure', 'Business'] },
-        { type: 'select', id: 'currentlyInsured', label: 'Currently insured?', options: ['Yes', 'No', 'Lapsed'] }
-      ]
-    },
-    Home: {
-      eyebrow: 'Home details',
-      heading: 'Tell us about the property',
-      hint: 'This just helps us route you to the right coverage.',
-      fields: [
-        { type: 'select', id: 'ownRent', label: 'Own or rent', options: ['Own', 'Rent', 'Condo'] },
-        { type: 'text', id: 'yearBuilt', label: 'Year built (approx.)', placeholder: '1998' },
-        { type: 'select', id: 'currentlyInsured', label: 'Currently insured?', options: ['Yes', 'No', 'Lapsed'] }
-      ]
-    },
-    Bundle: {
-      eyebrow: 'Bundle details',
-      heading: 'Quick numbers on both',
-      hint: 'Bundling usually means a better rate on each policy.',
-      fields: [
-        { type: 'stepper', id: 'vehicleCount', label: 'Vehicles to insure', min: 1, max: 6, value: 1 },
-        { type: 'select', id: 'ownRent', label: 'Own or rent your home', options: ['Own', 'Rent', 'Condo'] },
-        { type: 'select', id: 'currentlyInsured', label: 'Currently insured?', options: ['Yes', 'No', 'Lapsed'] }
-      ]
-    },
-    Business: {
-      eyebrow: 'Business details',
-      heading: 'A bit about the business',
-      hint: 'Every industry has different exposure — this points us the right way.',
-      fields: [
-        { type: 'text', id: 'businessType', label: 'Industry / type', placeholder: 'Contractor, restaurant, retail…' },
-        { type: 'stepper', id: 'employeeCount', label: 'Employees', min: 0, max: 50, value: 1 },
-        { type: 'select', id: 'currentlyInsured', label: 'Currently insured?', options: ['Yes', 'No', 'Lapsed'] }
-      ]
-    }
-  };
-
-  function renderSpecifics(type) {
-    const cfg = specificsConfig[type];
-    document.getElementById('specificsEyebrow').textContent = cfg.eyebrow;
-    document.getElementById('specificsHeading').textContent = cfg.heading;
-    document.getElementById('specificsHint').textContent = cfg.hint;
-    const container = document.getElementById('specificsFields');
-    container.innerHTML = '';
-    cfg.fields.forEach(f => {
-      const wrap = document.createElement('div');
-      wrap.className = 'field full';
-      const label = document.createElement('label');
-      label.textContent = f.label;
-      label.setAttribute('for', f.id);
-      wrap.appendChild(label);
-
-      if (f.type === 'select') {
-        const sel = document.createElement('select');
-        sel.id = f.id;
-        sel.innerHTML = '<option value="" disabled selected>Choose one</option>' +
-          f.options.map(o => `<option value="${o}">${o}</option>`).join('');
-        sel.addEventListener('change', () => { state.specifics[f.id] = sel.value; validateStep(); });
-        wrap.appendChild(sel);
-      } else if (f.type === 'text') {
-        const inp = document.createElement('input');
-        inp.id = f.id;
-        inp.placeholder = f.placeholder || '';
-        inp.addEventListener('input', () => { state.specifics[f.id] = inp.value; validateStep(); });
-        wrap.appendChild(inp);
-      } else if (f.type === 'stepper') {
-        state.specifics[f.id] = f.value;
-        const stepper = document.createElement('div');
-        stepper.className = 'stepper';
-        const minus = document.createElement('button');
-        minus.type = 'button'; minus.textContent = '−';
-        const count = document.createElement('div');
-        count.className = 'count'; count.textContent = f.value;
-        const plus = document.createElement('button');
-        plus.type = 'button'; plus.textContent = '+';
-        minus.addEventListener('click', () => {
-          f.value = Math.max(f.min, f.value - 1);
-          count.textContent = f.value;
-          state.specifics[f.id] = f.value;
-          validateStep();
-        });
-        plus.addEventListener('click', () => {
-          f.value = Math.min(f.max, f.value + 1);
-          count.textContent = f.value;
-          state.specifics[f.id] = f.value;
-          validateStep();
-        });
-        stepper.append(minus, count, plus);
-        wrap.appendChild(stepper);
-      }
-      container.appendChild(wrap);
-    });
-  }
-
-  function setupChipGroup(containerId, stateKey) {
-    const container = document.getElementById(containerId);
-    container.querySelectorAll('.chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        container.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
-        chip.classList.add('selected');
-        state[stateKey] = chip.dataset.value;
-        if (stateKey === 'coverage') renderSpecifics(chip.dataset.value);
-        validateStep();
-      });
-    });
-  }
-  setupChipGroup('coverageChips', 'coverage');
-  setupChipGroup('contactChips', 'contactMethod');
-
-  document.querySelectorAll('#quoteForm input').forEach(inp => {
-    if (['firstName','lastName','email','phone','zip'].includes(inp.id)) {
-      inp.addEventListener('input', validateStep);
-    }
-  });
-  document.getElementById('consent').addEventListener('change', validateStep);
-
-  function validateStep() {
-    let ok = false;
-    if (current === 1) ok = !!state.coverage;
-    if (current === 2) {
-      const cfg = specificsConfig[state.coverage];
-      ok = cfg.fields.every(f => {
-        const v = state.specifics[f.id];
-        return v !== undefined && v !== '' && v !== null;
-      });
-    }
-    if (current === 3) {
-      const req = ['firstName','lastName','email','phone','zip'];
-      ok = req.every(id => document.getElementById(id).value.trim().length > 0);
-    }
-    if (current === 4) ok = !!state.contactMethod;
-    if (current === 5) ok = document.getElementById('consent').checked;
-    nextBtn.disabled = !ok;
-    return ok;
-  }
-
-  function renderReview() {
-    const list = document.getElementById('reviewList');
-    const cfg = specificsConfig[state.coverage];
-    const rows = [
-      ['Coverage', state.coverage],
-      ...cfg.fields.map(f => [f.label, state.specifics[f.id]]),
-      ['Name', `${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`],
-      ['Email', document.getElementById('email').value],
-      ['Phone', document.getElementById('phone').value],
-      ['ZIP', document.getElementById('zip').value],
-      ['Contact via', state.contactMethod]
-    ];
-    list.innerHTML = rows.map(([k, v]) => `<div class="review-row"><span class="k">${k}</span><span class="v">${v}</span></div>`).join('');
-  }
-
-  function renderDoneStatus() {
-    const badge = document.getElementById('doneBadge');
-    const statusLine = document.getElementById('statusLine');
-    const heading = document.getElementById('doneHeading');
-    const hint = document.getElementById('doneHint');
-    const name = document.getElementById('firstName').value || 'friend';
-    const methodWord = { Call: 'phone call', Text: 'text', Email: 'email', Either: 'phone or email' }[state.contactMethod] || 'your preferred method';
-
-    badge.classList.remove('warn');
-    statusLine.classList.remove('warn');
-
-    if (saveOutcome === 'saved') {
-      statusLine.textContent = 'Saved to the live lead store';
-      heading.innerHTML = `You're in the queue, <span>${name}</span>.`;
-      hint.innerHTML = `A Paragon agent will reach out by <span>${methodWord}</span> shortly. This one actually landed — check "View captured leads" below.`;
-    } else if (saveOutcome === 'sent') {
-      statusLine.textContent = 'Sent to Paragon';
-      heading.innerHTML = `You're in the queue, <span>${name}</span>.`;
-      hint.innerHTML = `A Paragon agent will reach out by <span>${methodWord}</span> shortly.`;
-    } else if (saveOutcome === 'error') {
-      badge.classList.add('warn');
-      statusLine.classList.add('warn');
-      statusLine.textContent = 'Couldn’t confirm this saved';
-      heading.innerHTML = `Almost there, <span>${name}</span>.`;
-      hint.innerHTML = `Something went wrong saving this. If it happens again, call the office directly so nothing gets lost.`;
-    } else {
-      statusLine.textContent = 'Demo mode — not connected';
-      heading.innerHTML = `You're in the queue, <span>${name}</span>.`;
-      hint.innerHTML = `A Paragon agent would reach out by <span>${methodWord}</span> shortly. This preview isn’t connected to live storage right now, so nothing was actually saved.`;
+      return 'failed';
     }
   }
 
+  // ---- Navigation ----------------------------------------------------------
   function goTo(step) {
-    steps.forEach(s => s.classList.toggle('active', Number(s.dataset.step) === step));
     current = step;
-    stepCounter.textContent = `0${Math.min(step, totalSteps)} / 0${totalSteps}`;
-    progressFill.style.width = `${(Math.min(step, totalSteps) / totalSteps) * 100}%`;
-    backBtn.disabled = step === 1;
-    navRow.style.display = step > totalSteps ? 'none' : 'flex';
-    if (step === 5) renderReview();
-    validateStep();
-    window.scrollTo({ top: 0, behavior: 'auto' });
+    steps.forEach((s) => s.classList.toggle('active', Number(s.dataset.step) === step));
+    const shown = Math.min(step, totalSteps);
+    $('stepCounter').textContent = '0' + shown + ' / 0' + totalSteps;
+    $('progressFill').style.width = (shown / totalSteps * 100) + '%';
+    backBtn.disabled = step === 1 || (step === 3 && state.stage1Done);
+    $('navRow').hidden = step > totalSteps;
+    nextBtn.textContent = step === totalSteps ? 'Send' : 'Continue';
+    nextBtn.disabled = step === 1 && !state.coverage;
+    window.scrollTo(0, 0);
+  }
+
+  function renderDone(outcome) {
+    const name = clean($('firstName').value) || 'friend';
+    const method = { Call: 'phone call', Text: 'text', Email: 'email', Either: 'phone or email' }[$('contactMethod').value] || 'your preferred method';
+    const badge = $('doneBadge');
+    const status = $('statusLine');
+    badge.classList.remove('warn');
+    status.classList.remove('warn');
+    if (outcome === 'error') {
+      badge.classList.add('warn');
+      status.classList.add('warn');
+      status.textContent = 'We could not confirm this was sent';
+      $('doneHeading').textContent = 'Almost there, ' + name + '.';
+      $('doneHint').textContent = 'Something went wrong sending your request. Please call the office so nothing gets lost.';
+    } else {
+      status.textContent = outcome === 'preview' ? 'Preview only. Nothing was sent.' : 'Sent to Paragon';
+      $('doneHeading').textContent = "You're in the queue, " + name + '.';
+      $('doneHint').textContent = 'A Paragon agent will reach out by ' + method + ' shortly.';
+    }
   }
 
   backBtn.addEventListener('click', () => { if (current > 1) goTo(current - 1); });
+
   nextBtn.addEventListener('click', async () => {
-    if (!validateStep()) return;
-    if (current === totalSteps) {
+    if (state.busy) return;
+
+    if (current === 1) {
+      if (state.coverage) goTo(2);
+      return;
+    }
+
+    if (current === 2) {
+      if (!validateContact()) return;
+      if (!state.stage1Done) {
+        state.busy = true;
+        nextBtn.disabled = true;
+        nextBtn.textContent = 'Saving...';
+        state.stage1Payload = buildStage1();
+        state.stage1Result = await sendHook(STAGE1_HOOK_URL, state.stage1Payload);
+        state.stage1Done = true;
+        state.busy = false;
+        nextBtn.disabled = false;
+      }
+      renderDetails();
+      goTo(3);
+      return;
+    }
+
+    if (current === 3) {
+      if (!validateDetails()) return;
+      state.busy = true;
       nextBtn.disabled = true;
-      nextBtn.textContent = 'Sending…';
-      saveOutcome = await saveLead();
-      goTo(totalSteps + 1);
-      renderDoneStatus();
-      nextBtn.textContent = 'Continue';
-    } else {
-      goTo(current + 1);
+      nextBtn.textContent = 'Sending...';
+      if (state.stage1Result === 'failed') {
+        state.stage1Result = await sendHook(STAGE1_HOOK_URL, state.stage1Payload);
+        if (state.stage1Result === 'sent') await sleep(4000);
+      }
+      const r2 = await sendHook(STAGE2_HOOK_URL, buildStage2());
+      let outcome = 'sent';
+      if (!isLive) outcome = 'preview';
+      else if (state.stage1Result === 'failed' || r2 === 'failed') outcome = 'error';
+      if (isLive && !STAGE2_HOOK_URL) console.warn('STAGE2_HOOK_URL is empty: vehicle and home details were not sent.');
+      state.busy = false;
+      goTo(4);
+      renderDone(outcome);
     }
   });
 
+  $('quoteForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (current <= totalSteps && !nextBtn.disabled) nextBtn.click();
+  });
+
+  $('previewBanner').hidden = isLive;
   goTo(1);
-
-  // --- admin leads panel ---
-  const adminToggle = document.getElementById('adminToggle');
-  const adminPanel = document.getElementById('adminPanel');
-  const adminList = document.getElementById('adminList');
-  const adminStatus = document.getElementById('adminStatus');
-  let adminLoaded = false;
-
-  function formatWhen(iso) {
-    try {
-      const d = new Date(iso);
-      return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ' · ' +
-        d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
-    } catch (e) { return ''; }
-  }
-
-  function renderLeads(docs) {
-    if (!docs.length) {
-      adminList.innerHTML = '<div class="admin-empty">No leads yet — submit the form above to test it.</div>';
-      return;
-    }
-    adminList.innerHTML = docs.map(d => {
-      const l = d.data() || {};
-      const specifics = (l.specifics || []).map(s => `${s.label}: ${s.value}`).join(' · ');
-      return `<div class="lead-row">
-        <div>
-          <div class="who">${l.firstName || ''} ${l.lastName || ''} — ${l.coverage || ''}</div>
-          <div class="meta">${l.email || ''} · ${l.phone || ''} · ${specifics}</div>
-        </div>
-        <div class="when">${formatWhen(l.submittedAt)}</div>
-      </div>`;
-    }).join('');
-  }
-
-  async function loadLeads() {
-    if (!dbApi) {
-      adminStatus.textContent = 'not connected';
-      adminList.innerHTML = '<div class="admin-empty">Live storage isn’t connected in this view.</div>';
-      return;
-    }
-    try {
-      adminStatus.textContent = 'live';
-      dbApi.collection('leads').orderBy('submittedAt', 'desc').limit(50).onSnapshot(
-        (snap) => renderLeads(snap.docs),
-        () => { adminStatus.textContent = 'unavailable'; }
-      );
-    } catch (e) {
-      adminStatus.textContent = 'unavailable';
-      adminList.innerHTML = '<div class="admin-empty">Couldn’t load leads right now.</div>';
-    }
-  }
-
-  adminToggle.addEventListener('click', () => {
-    const open = adminPanel.classList.toggle('open');
-    adminToggle.textContent = (open ? 'Hide captured leads ▴' : 'View captured leads ▾');
-    if (open && !adminLoaded) {
-      adminLoaded = true;
-      loadLeads();
-    }
-  });
 })();
 </script>
 
