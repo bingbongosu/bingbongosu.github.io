@@ -578,11 +578,13 @@
 
     const grid = document.createElement('div');
     grid.className = 'field-grid';
+    const vinField = makeField('veh' + n + '-vin', 'VIN (optional, fills in the rest)', { cls: 'v-vin', placeholder: '17 characters', maxLength: 17 });
+    vinField.classList.add('full');
     grid.append(
+      vinField,
       makeField('veh' + n + '-year', 'Year', { cls: 'v-year', placeholder: '2021', maxLength: 4, inputMode: 'numeric' }),
       makeField('veh' + n + '-make', 'Make', { cls: 'v-make', placeholder: 'Honda' }),
-      makeField('veh' + n + '-model', 'Model', { cls: 'v-model', placeholder: 'CR-V' }),
-      makeField('veh' + n + '-vin', 'VIN (optional)', { cls: 'v-vin', placeholder: '17 characters', maxLength: 17 })
+      makeField('veh' + n + '-model', 'Model', { cls: 'v-model', placeholder: 'CR-V' })
     );
     card.append(head, grid);
     $('vehicleList').appendChild(card);
@@ -611,7 +613,7 @@
         const r = await fetch('https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/' + v + '?format=json');
         const d = (await r.json()).Results[0];
         if (!d || !d.Make || !d.ModelYear) { note.textContent = 'Could not read that VIN. Type the vehicle in instead.'; return; }
-        const put = (sel, val) => { const el = card.querySelector(sel); if (el && !clean(el.value)) el.value = val; };
+        const put = (sel, val) => { const el = card.querySelector(sel); if (el) { el.value = val; el.dispatchEvent(new Event('input', { bubbles: true })); el.classList.remove('field-error'); } };
         const title = (t) => t.charAt(0) + t.slice(1).toLowerCase();
         put('.v-year', d.ModelYear);
         put('.v-make', title(d.Make));
