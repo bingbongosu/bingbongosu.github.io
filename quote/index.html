@@ -720,7 +720,10 @@
   function buildStage1() {
     const spouseOn = !$('spouseCard').hidden;
     const biz = isCommercial();
-    const lob = state.coverage === 'Bundle' ? LOB_CODES.Auto + ',' + LOB_CODES.Home : (LOB_CODES[state.coverage] || '');
+    // EZLynx takes one code per line, so a bundle sends Auto as the line of business and Home
+    // separately as lobCode2. The Home part is also written into the details note.
+    const bundle = state.coverage === 'Bundle';
+    const lob = bundle ? LOB_CODES.Auto : (LOB_CODES[state.coverage] || '');
     return {
       leadId: state.leadId, stage: '1', source: SOURCE_NAME,
       applicantType: applicantType(),
@@ -729,7 +732,7 @@
       email: clean($('email').value).toLowerCase(), phone: digits($('phone').value),
       street: clean($('street').value), city: clean($('city').value),
       state: $('state').value, zip: clean($('zip').value),
-      coverage: state.coverage, lobCode: lob,
+      coverage: state.coverage, lobCode: lob, lobCode2: bundle ? LOB_CODES.Home : '',
       spouseFirstName: spouseOn && !biz ? clean($('spouseFirst').value) : '',
       spouseLastName: spouseOn && !biz ? clean($('spouseLast').value) : '',
       spouseEmail: spouseOn && !biz ? clean($('spouseEmail').value).toLowerCase() : '',
