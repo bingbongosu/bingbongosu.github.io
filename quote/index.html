@@ -433,10 +433,12 @@
   // stage2 adds the details (vehicles, home, life, business) to that applicant as a note.
   // Commercial uses EZLynx's commercial actions, so it needs its own pair. Several URLs can point at
   // the same Zap if that Zap branches on the applicantType field the form sends.
-  // The Commercial option stays hidden on the live site until its stage1 URL is filled in.
+  // The Commercial option stays hidden on the live site until its stage1 URL is filled in, and then
+  // until COMMERCIAL_PUBLIC is true. While false, breinlinger.co/quote/?commercial=1 shows it for testing.
+  const COMMERCIAL_PUBLIC = false;
   const HOOKS = {
     personal:   { stage1: 'https://hooks.zapier.com/hooks/catch/29109447/414l3hb/', stage2: 'https://hooks.zapier.com/hooks/catch/29109447/49il824/' },
-    commercial: { stage1: '', stage2: '' }
+    commercial: { stage1: 'https://hooks.zapier.com/hooks/catch/29109447/49iepeh/', stage2: '' }
   };
   // EZLynx line-of-business codes. AUTOP comes from Zapier's help text; confirm HOME and LIFE in EZLynx.
   // Commercial sends no code (the business details go in the note).
@@ -502,6 +504,7 @@
     $('coverageChips').querySelectorAll('.chip').forEach((chip) => {
       const type = chip.dataset.value === 'Commercial' ? 'commercial' : 'personal';
       if (!HOOKS[type].stage1) chip.hidden = true;
+      if (type === 'commercial' && !COMMERCIAL_PUBLIC && params.get('commercial') !== '1') chip.hidden = true;
     });
   }
 
