@@ -264,6 +264,7 @@
           <div class="field-grid">
             <div class="field"><label for="spouseFirst">First name</label><input id="spouseFirst" name="spouseFirst"></div>
             <div class="field"><label for="spouseLast">Last name</label><input id="spouseLast" name="spouseLast"></div>
+            <div class="field full" id="spouseRelWrap"><label for="spouseRel">Relationship to you</label><select id="spouseRel"><option selected>Spouse</option><option>Domestic Partner</option><option>Child</option><option>Parent</option><option>Relative</option><option>Other</option></select></div>
             <div class="field full" id="spouseEmailWrap"><label for="spouseEmail">Email (optional)</label><input id="spouseEmail" name="spouseEmail" type="email"></div>
           </div>
         </div>
@@ -530,6 +531,7 @@
     $('spouseToggle').textContent = biz ? '+ Add a second contact' : '+ Add a spouse or partner';
     $('spouseTitle').textContent = biz ? 'Second contact' : 'Spouse or partner';
     $('spouseEmailWrap').hidden = biz;
+    $('spouseRelWrap').hidden = biz;
   }
 
   // ---- Step 3: vehicles, home, coverage ------------------------------------
@@ -731,7 +733,7 @@
       spouseFirstName: spouseOn && !biz ? clean($('spouseFirst').value) : '',
       spouseLastName: spouseOn && !biz ? clean($('spouseLast').value) : '',
       spouseEmail: spouseOn && !biz ? clean($('spouseEmail').value).toLowerCase() : '',
-      spouseRelationship: spouseOn && !biz ? 'Spouse' : '',
+      spouseRelationship: spouseOn && !biz ? $('spouseRel').value : '',
       secondaryContactFirstName: spouseOn && biz ? clean($('spouseFirst').value) : '',
       secondaryContactLastName: spouseOn && biz ? clean($('spouseLast').value) : '',
       submittedAt: new Date().toISOString()
@@ -803,7 +805,7 @@
     if (renewal) lines.push('Renewal date: ' + renewal);
     if (p1.spouseFirstName) {
       lines.push('');
-      lines.push('Spouse / partner: ' + p1.spouseFirstName + ' ' + p1.spouseLastName + (p1.spouseEmail ? ' (' + p1.spouseEmail + ')' : ''));
+      lines.push(p1.spouseRelationship + ': ' + p1.spouseFirstName + ' ' + p1.spouseLastName + (p1.spouseEmail ? ' (' + p1.spouseEmail + ')' : ''));
     }
     if (p1.secondaryContactFirstName) {
       lines.push('');
