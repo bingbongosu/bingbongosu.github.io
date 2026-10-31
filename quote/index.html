@@ -589,8 +589,62 @@
     );
     card.append(head, grid);
     $('vehicleList').appendChild(card);
+    attachVinDecode(card);
     renumberVehicles();
   }
+
+  // ---- Free lookups (best effort: if one fails, people just type it) --------
+  // VIN -> year / make / model, from the US government's NHTSA decoder.
+  function attachVinDecode(card) {
+    const vin = card.querySelector('.v-vin');
+    const note = document.createElement('p');
+    note.className = 'section-hint';
+    note.style.margin = '.35rem 0 0';
+    note.style.fontSize = '.8rem';
+    vin.closest('.field').appendChild(note);
+    let last = '';
+    vin.addEventListener('input', async () => {
+      const v = vin.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      vin.value = v;
+      if (v.length !== 17) { note.textContent = ''; last = ''; return; }
+      if (v === last) return;
+      last = v;
+      note.textContent = 'Looking up...';
+      try {
+        const r = await fetch('https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/' + v + '?format=json');
+        const d = (await r.json()).Results[0];
+        if (!d || !d.Make || !d.ModelYear) { note.textContent = 'Could not read that VIN. Type the vehicle in instead.'; return; }
+        const put = (sel, val) => { const el = card.querySelector(sel); if (el && !clean(el.value)) el.value = val; };
+        const title = (t) => t.charAt(0) + t.slice(1).toLowerCase();
+        put('.v-year', d.ModelYear);
+        put('.v-make', title(d.Make));
+        put('.v-model', d.Model + (d.Trim ? ' ' + d.Trim : ''));
+        note.textContent = 'Found: ' + d.ModelYear + ' ' + title(d.Make) + ' ' + d.Model;
+      } catch (e) {
+        note.textContent = '';
+      }
+    });
+  }
+
+  // ZIP -> city + state, from a free ZIP lookup. Never overwrites what was typed.
+  function attachZipLookup(zipId, cityId, stateId) {
+    const zip = $(zipId);
+    $(stateId).addEventListener('change', () => { $(stateId).dataset.touched = '1'; });
+    zip.addEventListener('input', async () => {
+      const z = zip.value.replace(/\D/g, '').slice(0, 5);
+      if (z.length !== 5) return;
+      try {
+        const r = await fetch('https://api.zippopotam.us/us/' + z);
+        if (!r.ok) return;
+        const place = (await r.json()).places[0];
+        if (!clean($(cityId).value)) $(cityId).value = place['place name'];
+        const st = $(stateId);
+        if (!st.dataset.touched) st.value = place['state abbreviation'];
+      } catch (e) { /* ignore */ }
+    });
+  }
+  attachZipLookup('zip', 'city', 'state');
+  attachZipLookup('propZip', 'propCity', 'propState');
   $('addVehicle').addEventListener('click', () => {
     addVehicle();
     const cards = vehicleCards();
