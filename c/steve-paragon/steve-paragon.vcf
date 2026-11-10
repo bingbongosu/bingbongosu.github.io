@@ -1,0 +1,12 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Breinlinger;Steve;;;
+FN:Steve Breinlinger
+ORG:Paragon Insurance Group
+TITLE:Producer
+item1.TEL;TYPE=CELL,VOICE,PREF:+16109142577
+item1.X-ABLabel:Office / Text
+EMAIL;TYPE=INTERNET,WORK:Steve@paragoninsurancegrp.com
+URL:https://www.paragoninsurancegrp.com
+ADR;TYPE=WORK:;;1 W 3rd Street Suite 201;Media;PA;19063;USA
+END:VCARD
