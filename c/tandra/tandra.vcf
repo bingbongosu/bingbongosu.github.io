@@ -1,0 +1,15 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Bowers;Tandra;;;
+FN:Tandra Bowers
+ORG:Keller Williams Main Line Realty
+TITLE:Realtor®
+item1.TEL;TYPE=CELL,VOICE,PREF:+12156804652
+item1.X-ABLabel:Direct
+item2.TEL;TYPE=WORK,VOICE:+16105200100
+item2.X-ABLabel:Market Center
+item3.TEL;TYPE=FAX:+16103702698
+item3.X-ABLabel:Fax
+EMAIL;TYPE=INTERNET,WORK:Tandra.Bowers@kw.com
+URL:https://linktr.ee/tandrabowers
+END:VCARD
