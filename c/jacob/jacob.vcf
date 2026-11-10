@@ -1,0 +1,11 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Thomas;Jacob;;;
+FN:Jacob Thomas
+ORG:Pye-Barker Fire & Safety
+TITLE:Security Consultant
+TEL;TYPE=CELL,VOICE,PREF:+12678356717
+TEL;TYPE=WORK,VOICE:+12675011715
+EMAIL;TYPE=INTERNET,WORK:jacob.thomas@pyebarkerfs.com
+ADR;TYPE=WORK:;;1008 West 9th Avenue;King of Prussia;PA;19406;USA
+END:VCARD
