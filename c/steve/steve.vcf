@@ -1,0 +1,17 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Breinlinger;Steve;;;
+FN:Steve Breinlinger
+ORG:KW Main Line & KW Media
+TITLE:Director of Vendor Partnerships
+item1.TEL;TYPE=CELL,VOICE,PREF:+14843810949
+item1.X-ABLabel:Direct
+item2.TEL;TYPE=WORK,VOICE:+16105200100
+item2.X-ABLabel:Main Line Office
+item3.TEL;TYPE=WORK,VOICE:+16105651995
+item3.X-ABLabel:Media Office
+item4.EMAIL;TYPE=INTERNET,WORK:vendors@mainlinekw.com
+item4.X-ABLabel:Main Line
+item5.EMAIL;TYPE=INTERNET,WORK:vendors@kellerwilliamsmedia.com
+item5.X-ABLabel:Media
+END:VCARD
