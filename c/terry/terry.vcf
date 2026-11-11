@@ -1,0 +1,14 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Marker-Goodman;Terry;;;
+FN:Terry Marker-Goodman
+ORG:Keller Williams Real Estate
+TITLE:Realtor®
+item1.TEL;TYPE=CELL,VOICE,PREF:+16108422655
+item1.X-ABLabel:Cell
+item2.TEL;TYPE=WORK,VOICE:+16105651995
+item2.X-ABLabel:Office
+EMAIL;TYPE=INTERNET,WORK:TerryM@kw.com
+URL:https://www.magicmarkerhomes.com
+ADR;TYPE=WORK:;;Rose Tree Corporate Center II\, 1400 N. Providence Rd.\, Suite 1000;Media;PA;19063;USA
+END:VCARD
