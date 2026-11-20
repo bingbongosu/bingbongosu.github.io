@@ -247,13 +247,19 @@
           <div class="field"><label for="lastName" id="lblLast">Last name</label><input id="lastName" name="lastName" autocomplete="family-name" placeholder="Rivera"></div>
           <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" placeholder="jordan@email.com"></div>
           <div class="field"><label for="phone" id="lblPhone">Mobile phone</label><input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="(610) 555-0134"></div>
-          <div class="field" id="dobWrap"><label for="dob">Date of birth (optional)</label><input id="dob" inputmode="numeric" maxlength="10" autocomplete="bday" placeholder="MM/DD/YYYY"></div>
           <div class="field full"><label for="street" id="lblStreet">Street address</label><input id="street" name="street" autocomplete="address-line1" placeholder="123 Baltimore Pike"></div>
         </div>
         <div class="field-grid cols3">
           <div class="field"><label for="city">City</label><input id="city" name="city" autocomplete="address-level2" placeholder="Media"></div>
           <div class="field"><label for="state">State</label><select id="state" name="state" autocomplete="address-level1"></select></div>
           <div class="field"><label for="zip">ZIP code</label><input id="zip" name="zip" inputmode="numeric" maxlength="5" autocomplete="postal-code" placeholder="19063"></div>
+        </div>
+
+        <p class="section-hint" id="driverHint" style="margin:1.4rem 0 .5rem">Optional. Date of birth and driver's license help an agent prepare an accurate quote. Skip anything you would rather share by phone.</p>
+        <div class="field-grid cols3" id="driverGrid">
+          <div class="field" id="dobWrap"><label for="dob">Date of birth</label><input id="dob" inputmode="numeric" maxlength="10" autocomplete="bday" placeholder="MM/DD/YYYY"></div>
+          <div class="field" id="dlWrap1"><label for="dlNumber">License no.</label><input id="dlNumber" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>
+          <div class="field" id="dlWrap2"><label for="dlState">License state</label><select id="dlState"></select></div>
         </div>
 
         <button type="button" class="add-btn" id="spouseToggle">+ Add a spouse or partner</button>
@@ -263,8 +269,12 @@
             <div class="field"><label for="spouseFirst">First name</label><input id="spouseFirst" name="spouseFirst"></div>
             <div class="field"><label for="spouseLast">Last name</label><input id="spouseLast" name="spouseLast"></div>
             <div class="field full" id="spouseRelWrap"><label for="spouseRel">Relationship to you</label><select id="spouseRel"><option selected>Spouse</option><option>Domestic Partner</option><option>Child</option><option>Parent</option><option>Relative</option><option>Other</option></select></div>
-            <div class="field full" id="spouseDobWrap"><label for="spouseDob">Date of birth (optional)</label><input id="spouseDob" inputmode="numeric" maxlength="10" autocomplete="off" placeholder="MM/DD/YYYY"></div>
             <div class="field full" id="spouseEmailWrap"><label for="spouseEmail">Email (optional)</label><input id="spouseEmail" name="spouseEmail" type="email"></div>
+          </div>
+          <div class="field-grid cols3" id="spouseDriverGrid" style="margin-top:1.1rem">
+            <div class="field" id="spouseDobWrap"><label for="spouseDob">Date of birth</label><input id="spouseDob" inputmode="numeric" maxlength="10" autocomplete="off" placeholder="MM/DD/YYYY"></div>
+            <div class="field" id="spouseDlWrap1"><label for="spouseDlNumber">License no.</label><input id="spouseDlNumber" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>
+            <div class="field" id="spouseDlWrap2"><label for="spouseDlState">License state</label><select id="spouseDlState"></select></div>
           </div>
         </div>
 
@@ -367,22 +377,6 @@
                 <label class="consent" for="cov-umb"><input type="checkbox" id="cov-umb" value="Umbrella / excess"><span>Umbrella / excess</span></label>
                 <label class="consent" for="cov-unsure"><input type="checkbox" id="cov-unsure" value="Not sure yet"><span>Not sure yet</span></label>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <div id="aboutSection" hidden>
-          <h2 class="section-title">Driver's license</h2>
-          <p class="section-hint">Optional. It helps an agent run an accurate auto quote. Skip it and we will ask by phone.</p>
-          <div class="field-grid">
-            <div class="field"><label for="dlNumber">Your license number</label><input id="dlNumber" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>
-            <div class="field"><label for="dlState">License state</label><select id="dlState"></select></div>
-          </div>
-          <div id="spouseAbout" hidden>
-            <p class="field-label" id="spouseAboutLabel" style="margin:1.2rem 0 .5rem">Your spouse</p>
-            <div class="field-grid">
-              <div class="field"><label for="spouseDlNumber">License number</label><input id="spouseDlNumber" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>
-              <div class="field"><label for="spouseDlState">License state</label><select id="spouseDlState"></select></div>
             </div>
           </div>
         </div>
@@ -591,8 +585,17 @@
     $('spouseTitle').textContent = biz ? 'Second contact' : 'Spouse or partner';
     $('spouseEmailWrap').hidden = biz;
     $('spouseRelWrap').hidden = biz;
-    $('spouseDobWrap').hidden = biz;
-    $('dobWrap').hidden = biz;
+    // Personal quotes only. Date of birth always shows; license fields only for auto.
+    $('driverGrid').hidden = biz;
+    $('driverHint').hidden = biz;
+    $('spouseDriverGrid').hidden = biz;
+    ['dlWrap1', 'dlWrap2', 'spouseDlWrap1', 'spouseDlWrap2'].forEach((id) => { $(id).hidden = !hasAuto(); });
+    $('driverHint').textContent = hasAuto()
+      ? "Optional. Date of birth and driver's license help an agent prepare an accurate quote. Skip anything you would rather share by phone."
+      : 'Optional. Date of birth helps an agent prepare an accurate quote. Skip it if you would rather share it by phone.';
+    const rel = $('spouseRel').value;
+    $('spouseTitle').textContent = biz ? 'Second contact' : 'Spouse or partner';
+    ['dlState', 'spouseDlState'].forEach((id) => { if (!$(id).value && $('state').value) $(id).value = $('state').value; });
   }
 
   // ---- Step 3: vehicles, home, coverage ------------------------------------
@@ -752,17 +755,8 @@
     $('homeTitle').classList.toggle('first', !hasAuto());
     if (hasAuto() && vehicleCards().length === 0) addVehicle();
     updateInsuredFields();
-    renderAbout();
   }
 
-  function renderAbout() {
-    const spouseOn = !$('spouseCard').hidden && !isCommercial();
-    $('aboutSection').hidden = !hasAuto();
-    $('spouseAbout').hidden = !spouseOn;
-    const rel = $('spouseRel').value;
-    $('spouseAboutLabel').textContent = rel === 'Spouse' ? 'Your spouse' : 'Your ' + rel.toLowerCase();
-    ['dlState', 'spouseDlState'].forEach((id) => { if (!$(id).value && $('state').value) $(id).value = $('state').value; });
-  }
 
   // ---- Validation ----------------------------------------------------------
   $('quoteForm').addEventListener('input', clearFieldError);
@@ -791,13 +785,15 @@
     if (digits($('phone').value).length !== 10) bad.push('phone');
     if (!/^\d{5}$/.test(clean($('zip').value))) bad.push('zip');
     if (!isCommercial() && parseDob($('dob').value) === null) bad.push('dob');
+    if (hasAuto() && !licenseOk($('dlNumber').value)) bad.push('dlNumber');
     if (!$('spouseCard').hidden) {
       if (!isCommercial() && parseDob($('spouseDob').value) === null) bad.push('spouseDob');
+      if (hasAuto() && !licenseOk($('spouseDlNumber').value)) bad.push('spouseDlNumber');
       ['spouseFirst', 'spouseLast'].forEach((id) => { if (!clean($(id).value)) bad.push(id); });
       if (!isCommercial() && clean($('spouseEmail').value) && !emailOk($('spouseEmail').value)) bad.push('spouseEmail');
     }
     let msg = '';
-    if (bad.length) msg = 'Check the highlighted fields. Phone needs 10 digits, ZIP needs 5, and birth dates look like 04/18/1985.';
+    if (bad.length) msg = "Check the highlighted fields. Phone needs 10 digits, ZIP needs 5, birth dates look like 04/18/1985, and a license number is letters and digits only.";
     else if (!$('consent').checked) msg = 'Tick the box so we can contact you about this quote.';
     $('contactError').textContent = msg;
     if (bad.length) flag(bad);
@@ -837,10 +833,6 @@
       if (!$('employees').value) bad.push('employees');
       if (!commercialCoverages().length) bad.push('coverageField');
     }
-    if (hasAuto()) {
-      if (!licenseOk($('dlNumber').value)) bad.push('dlNumber');
-      if (!$('spouseCard').hidden && !licenseOk($('spouseDlNumber').value)) bad.push('spouseDlNumber');
-    }
     if (!$('currentlyInsured').value) bad.push('currentlyInsured');
     if (!$('contactMethod').value) bad.push('contactMethod');
     const msg = bad.length ? 'Check the highlighted fields. Years need 4 digits.' : '';
@@ -857,8 +849,17 @@
     // separately as lobCode2. The Home part is also written into the details note.
     const bundle = state.coverage === 'Bundle';
     const lob = bundle ? LOB_CODES.Auto : (LOB_CODES[state.coverage] || '');
+    // Driver's license has no EZLynx field, so it travels as a ready-made note. Zap 1 adds it right after
+    // the applicant is created, and a Filter step skips the note when this is empty.
+    const dlNum = hasAuto() && !biz ? clean($('dlNumber').value) : '';
+    const spDl = hasAuto() && spouseOn && !biz ? clean($('spouseDlNumber').value) : '';
+    const dlLines = [];
+    if (dlNum) dlLines.push("Driver's license: " + ($('dlState').value ? $('dlState').value + ' ' : '') + dlNum);
+    if (spDl) dlLines.push($('spouseRel').value + " driver's license: " + ($('spouseDlState').value ? $('spouseDlState').value + ' ' : '') + spDl);
     return {
       leadId: state.leadId, stage: '1', source: SOURCE_NAME,
+      driverNoteTitle: dlLines.length ? 'QQ | Driver info' : '',
+      driverNoteBody: dlLines.join('\n'),
       applicantType: applicantType(),
       businessName: biz ? clean($('businessName').value) : '',
       firstName: clean($('firstName').value), lastName: clean($('lastName').value),
@@ -941,20 +942,6 @@
     lines.push(hasLife() ? 'Currently has life insurance: ' + insured : 'Currently insured: ' + insured);
     if (carrier) lines.push('Current company: ' + carrier);
     if (renewal) lines.push('Renewal date: ' + renewal);
-    // Driver's license has no EZLynx field, so it goes in the note only, never in a separate field.
-    const dlNum = hasAuto() && !isCommercial() ? clean($('dlNumber').value) : '';
-    if (dlNum) {
-      lines.push('');
-      lines.push('Applicant:');
-      if (dlNum) lines.push("Driver's license: " + ($('dlState').value ? $('dlState').value + ' ' : '') + dlNum);
-    }
-    const spouseOnNow = !$('spouseCard').hidden && !isCommercial();
-    const spDlNum = spouseOnNow && hasAuto() ? clean($('spouseDlNumber').value) : '';
-    if (spDlNum) {
-      lines.push('');
-      lines.push(p1.spouseRelationship + ' details:');
-      if (spDlNum) lines.push("Driver's license: " + ($('spouseDlState').value ? $('spouseDlState').value + ' ' : '') + spDlNum);
-    }
     if (p1.spouseFirstName) {
       lines.push('');
       lines.push(p1.spouseRelationship + ': ' + p1.spouseFirstName + ' ' + p1.spouseLastName + (p1.spouseEmail ? ' (' + p1.spouseEmail + ')' : ''));
