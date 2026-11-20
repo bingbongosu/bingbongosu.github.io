@@ -537,16 +537,24 @@
     $(id).innerHTML = '<option value="">State</option>' +
       US_STATES.map((st) => '<option value="' + st + '">' + st + '</option>').join('');
   });
-  // Typing 04181985 becomes 04/18/1985. Someone who types their own slashes (4/18/1985) is left alone
-  // until they leave the field, when it is padded to MM/DD/YYYY.
-  function formatDob(el) {
-    let v = el.value.replace(/[^\d/.-]/g, '').slice(0, 10);
-    if (!/[/.-]/.test(v)) {
-      const d = v.slice(0, 8);
-      v = d.length > 4 ? d.slice(0, 2) + '/' + d.slice(2, 4) + '/' + d.slice(4)
-        : d.length > 2 ? d.slice(0, 2) + '/' + d.slice(2) : d;
+  // Builds MM/DD/YYYY as people type. Digits fill month, day, then year, and the slashes are added for
+  // them. Typing their own slash pads a single digit (4/ becomes 04/). Deleting is left alone so
+  // backspace can remove a slash.
+  function formatDob(el, ev) {
+    const raw = el.value.replace(/[^\d/.-]/g, '');
+    if (ev && /^delete/.test(ev.inputType || '')) { el.value = raw.slice(0, 10); return; }
+    const parts = [];
+    let cur = '';
+    for (const ch of raw) {
+      if (/\d/.test(ch)) {
+        cur += ch;
+        if (parts.length < 2 && cur.length === 2) { parts.push(cur); cur = ''; }
+      } else if (cur && parts.length < 2) {
+        parts.push(cur.padStart(2, '0')); cur = '';
+      }
     }
-    el.value = v;
+    el.value = parts.length ? parts.join('/') + '/' + cur.slice(0, 4) : cur.slice(0, 4);
+    if (parts.length === 2 && !cur) el.value = parts.join('/') + '/';
   }
   function padDob(v) {
     const m = /^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/.exec(clean(v));
@@ -554,7 +562,7 @@
   }
   function cleanLicense(el) { el.value = el.value.toUpperCase().replace(/[^A-Z0-9*-]/g, ''); }
   ['dob', 'spouseDob'].forEach((id) => {
-    $(id).addEventListener('input', () => formatDob($(id)));
+    $(id).addEventListener('input', (ev) => formatDob($(id), ev));
     $(id).addEventListener('blur', () => { $(id).value = padDob($(id).value); });
   });
   ['dlNumber', 'spouseDlNumber'].forEach((id) => $(id).addEventListener('input', () => cleanLicense($(id))));
