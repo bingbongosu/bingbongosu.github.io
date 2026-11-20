@@ -247,6 +247,7 @@
           <div class="field"><label for="lastName" id="lblLast">Last name</label><input id="lastName" name="lastName" autocomplete="family-name" placeholder="Rivera"></div>
           <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" placeholder="jordan@email.com"></div>
           <div class="field"><label for="phone" id="lblPhone">Mobile phone</label><input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="(610) 555-0134"></div>
+          <div class="field" id="dobWrap"><label for="dob">Date of birth (optional)</label><input id="dob" inputmode="numeric" maxlength="10" autocomplete="bday" placeholder="MM/DD/YYYY"></div>
           <div class="field full"><label for="street" id="lblStreet">Street address</label><input id="street" name="street" autocomplete="address-line1" placeholder="123 Baltimore Pike"></div>
         </div>
         <div class="field-grid cols3">
@@ -262,6 +263,7 @@
             <div class="field"><label for="spouseFirst">First name</label><input id="spouseFirst" name="spouseFirst"></div>
             <div class="field"><label for="spouseLast">Last name</label><input id="spouseLast" name="spouseLast"></div>
             <div class="field full" id="spouseRelWrap"><label for="spouseRel">Relationship to you</label><select id="spouseRel"><option selected>Spouse</option><option>Domestic Partner</option><option>Child</option><option>Parent</option><option>Relative</option><option>Other</option></select></div>
+            <div class="field full" id="spouseDobWrap"><label for="spouseDob">Date of birth (optional)</label><input id="spouseDob" inputmode="numeric" maxlength="10" autocomplete="off" placeholder="MM/DD/YYYY"></div>
             <div class="field full" id="spouseEmailWrap"><label for="spouseEmail">Email (optional)</label><input id="spouseEmail" name="spouseEmail" type="email"></div>
           </div>
         </div>
@@ -365,6 +367,22 @@
                 <label class="consent" for="cov-umb"><input type="checkbox" id="cov-umb" value="Umbrella / excess"><span>Umbrella / excess</span></label>
                 <label class="consent" for="cov-unsure"><input type="checkbox" id="cov-unsure" value="Not sure yet"><span>Not sure yet</span></label>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="aboutSection" hidden>
+          <h2 class="section-title">Driver's license</h2>
+          <p class="section-hint">Optional. It helps an agent run an accurate auto quote. Skip it and we will ask by phone.</p>
+          <div class="field-grid">
+            <div class="field"><label for="dlNumber">Your license number</label><input id="dlNumber" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>
+            <div class="field"><label for="dlState">License state</label><select id="dlState"></select></div>
+          </div>
+          <div id="spouseAbout" hidden>
+            <p class="field-label" id="spouseAboutLabel" style="margin:1.2rem 0 .5rem">Your spouse</p>
+            <div class="field-grid">
+              <div class="field"><label for="spouseDlNumber">License number</label><input id="spouseDlNumber" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>
+              <div class="field"><label for="spouseDlState">License state</label><select id="spouseDlState"></select></div>
             </div>
           </div>
         </div>
@@ -520,6 +538,47 @@
     $('spouseToggle').hidden = false;
   });
 
+  // ---- About you: date of birth and driver's license (all optional) -------------
+  ['dlState', 'spouseDlState'].forEach((id) => {
+    $(id).innerHTML = '<option value="">State</option>' +
+      US_STATES.map((st) => '<option value="' + st + '">' + st + '</option>').join('');
+  });
+  // Typing 04181985 becomes 04/18/1985. Someone who types their own slashes (4/18/1985) is left alone
+  // until they leave the field, when it is padded to MM/DD/YYYY.
+  function formatDob(el) {
+    let v = el.value.replace(/[^\d/.-]/g, '').slice(0, 10);
+    if (!/[/.-]/.test(v)) {
+      const d = v.slice(0, 8);
+      v = d.length > 4 ? d.slice(0, 2) + '/' + d.slice(2, 4) + '/' + d.slice(4)
+        : d.length > 2 ? d.slice(0, 2) + '/' + d.slice(2) : d;
+    }
+    el.value = v;
+  }
+  function padDob(v) {
+    const m = /^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/.exec(clean(v));
+    return m ? m[1].padStart(2, '0') + '/' + m[2].padStart(2, '0') + '/' + m[3] : clean(v);
+  }
+  function cleanLicense(el) { el.value = el.value.toUpperCase().replace(/[^A-Z0-9*-]/g, ''); }
+  ['dob', 'spouseDob'].forEach((id) => {
+    $(id).addEventListener('input', () => formatDob($(id)));
+    $(id).addEventListener('blur', () => { $(id).value = padDob($(id).value); });
+  });
+  ['dlNumber', 'spouseDlNumber'].forEach((id) => $(id).addEventListener('input', () => cleanLicense($(id))));
+  // Returns '' when blank, the ISO date when valid, or null when it is not a plausible birth date.
+  function parseDob(v) {
+    v = padDob(v);
+    if (!v) return '';
+    const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(v);
+    if (!m) return null;
+    const mo = Number(m[1]), da = Number(m[2]), yr = Number(m[3]);
+    const dt = new Date(yr, mo - 1, da);
+    if (dt.getFullYear() !== yr || dt.getMonth() !== mo - 1 || dt.getDate() !== da) return null;
+    const age = (Date.now() - dt.getTime()) / 31557600000;
+    if (age < 14 || age > 110) return null;
+    return m[3] + '-' + m[1] + '-' + m[2];
+  }
+  const licenseOk = (v) => !v || /^[A-Z0-9*-]{5,20}$/.test(v);
+
   function renderContact() {
     const biz = isCommercial();
     $('businessWrap').hidden = !biz;
@@ -532,6 +591,8 @@
     $('spouseTitle').textContent = biz ? 'Second contact' : 'Spouse or partner';
     $('spouseEmailWrap').hidden = biz;
     $('spouseRelWrap').hidden = biz;
+    $('spouseDobWrap').hidden = biz;
+    $('dobWrap').hidden = biz;
   }
 
   // ---- Step 3: vehicles, home, coverage ------------------------------------
@@ -691,6 +752,16 @@
     $('homeTitle').classList.toggle('first', !hasAuto());
     if (hasAuto() && vehicleCards().length === 0) addVehicle();
     updateInsuredFields();
+    renderAbout();
+  }
+
+  function renderAbout() {
+    const spouseOn = !$('spouseCard').hidden && !isCommercial();
+    $('aboutSection').hidden = !hasAuto();
+    $('spouseAbout').hidden = !spouseOn;
+    const rel = $('spouseRel').value;
+    $('spouseAboutLabel').textContent = rel === 'Spouse' ? 'Your spouse' : 'Your ' + rel.toLowerCase();
+    ['dlState', 'spouseDlState'].forEach((id) => { if (!$(id).value && $('state').value) $(id).value = $('state').value; });
   }
 
   // ---- Validation ----------------------------------------------------------
@@ -719,12 +790,14 @@
     if (!emailOk($('email').value)) bad.push('email');
     if (digits($('phone').value).length !== 10) bad.push('phone');
     if (!/^\d{5}$/.test(clean($('zip').value))) bad.push('zip');
+    if (!isCommercial() && parseDob($('dob').value) === null) bad.push('dob');
     if (!$('spouseCard').hidden) {
+      if (!isCommercial() && parseDob($('spouseDob').value) === null) bad.push('spouseDob');
       ['spouseFirst', 'spouseLast'].forEach((id) => { if (!clean($(id).value)) bad.push(id); });
       if (!isCommercial() && clean($('spouseEmail').value) && !emailOk($('spouseEmail').value)) bad.push('spouseEmail');
     }
     let msg = '';
-    if (bad.length) msg = 'Check the highlighted fields. Phone needs 10 digits and ZIP needs 5.';
+    if (bad.length) msg = 'Check the highlighted fields. Phone needs 10 digits, ZIP needs 5, and birth dates look like 04/18/1985.';
     else if (!$('consent').checked) msg = 'Tick the box so we can contact you about this quote.';
     $('contactError').textContent = msg;
     if (bad.length) flag(bad);
@@ -764,6 +837,10 @@
       if (!$('employees').value) bad.push('employees');
       if (!commercialCoverages().length) bad.push('coverageField');
     }
+    if (hasAuto()) {
+      if (!licenseOk($('dlNumber').value)) bad.push('dlNumber');
+      if (!$('spouseCard').hidden && !licenseOk($('spouseDlNumber').value)) bad.push('spouseDlNumber');
+    }
     if (!$('currentlyInsured').value) bad.push('currentlyInsured');
     if (!$('contactMethod').value) bad.push('contactMethod');
     const msg = bad.length ? 'Check the highlighted fields. Years need 4 digits.' : '';
@@ -793,6 +870,8 @@
       spouseLastName: spouseOn && !biz ? clean($('spouseLast').value) : '',
       spouseEmail: spouseOn && !biz ? clean($('spouseEmail').value).toLowerCase() : '',
       spouseRelationship: spouseOn && !biz ? $('spouseRel').value : '',
+      dateOfBirth: biz ? '' : parseDob($('dob').value) || '',
+      spouseDateOfBirth: spouseOn && !biz ? parseDob($('spouseDob').value) || '' : '',
       secondaryContactFirstName: spouseOn && biz ? clean($('spouseFirst').value) : '',
       secondaryContactLastName: spouseOn && biz ? clean($('spouseLast').value) : '',
       submittedAt: new Date().toISOString()
@@ -862,6 +941,20 @@
     lines.push(hasLife() ? 'Currently has life insurance: ' + insured : 'Currently insured: ' + insured);
     if (carrier) lines.push('Current company: ' + carrier);
     if (renewal) lines.push('Renewal date: ' + renewal);
+    // Driver's license has no EZLynx field, so it goes in the note only, never in a separate field.
+    const dlNum = hasAuto() && !isCommercial() ? clean($('dlNumber').value) : '';
+    if (dlNum) {
+      lines.push('');
+      lines.push('Applicant:');
+      if (dlNum) lines.push("Driver's license: " + ($('dlState').value ? $('dlState').value + ' ' : '') + dlNum);
+    }
+    const spouseOnNow = !$('spouseCard').hidden && !isCommercial();
+    const spDlNum = spouseOnNow && hasAuto() ? clean($('spouseDlNumber').value) : '';
+    if (spDlNum) {
+      lines.push('');
+      lines.push(p1.spouseRelationship + ' details:');
+      if (spDlNum) lines.push("Driver's license: " + ($('spouseDlState').value ? $('spouseDlState').value + ' ' : '') + spDlNum);
+    }
     if (p1.spouseFirstName) {
       lines.push('');
       lines.push(p1.spouseRelationship + ': ' + p1.spouseFirstName + ' ' + p1.spouseLastName + (p1.spouseEmail ? ' (' + p1.spouseEmail + ')' : ''));
