@@ -99,6 +99,8 @@
     line-height: 1.12; margin: 0 0 .5rem; text-wrap: balance;
   }
   .hint { opacity: .65; font-size: 1rem; margin: 0 0 2rem; max-width: 50ch; line-height: 1.55; }
+  .alt-link { background: none; border: 0; padding: .35rem 0; margin-top: .4rem; font: inherit; font-size: .86rem; color: var(--ink); opacity: .65; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .alt-link:hover { opacity: 1; }
   .section-title { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; margin: 2.2rem 0 .3rem; }
   .section-title.first { margin-top: 0; }
   .section-hint { opacity: .6; font-size: .9rem; margin: 0 0 1.1rem; }
@@ -315,10 +317,8 @@
             <div class="field"><label for="yearBuilt">Year built (approx.)</label><input id="yearBuilt" inputmode="numeric" maxlength="4" placeholder="1998"></div>
             <div class="field full"><label for="squareFeet">Square feet (optional)</label><input id="squareFeet" inputmode="numeric" placeholder="1800"></div>
           </div>
-          <label class="consent compact" for="sameAddress">
-            <input type="checkbox" id="sameAddress" checked>
-            <span>The home is at the address I gave on the last step.</span>
-          </label>
+          <input type="checkbox" id="sameAddress" checked hidden aria-hidden="true" tabindex="-1">
+          <button type="button" class="alt-link" id="altHomeToggle">The home is at a different address</button>
           <div id="homeAltFields" hidden>
             <div class="field-grid" style="margin-top:1.3rem"><div class="field full"><label for="propStreet">Home street address</label><input id="propStreet"></div></div>
             <div class="field-grid cols3">
@@ -741,7 +741,13 @@
     if (last) last.querySelector('.v-year').focus();
   });
 
-  $('sameAddress').addEventListener('change', () => { $('homeAltFields').hidden = $('sameAddress').checked; });
+  // The home is assumed to be at the contact address. This link is only for a different property.
+  function setAltHome(on) {
+    $('sameAddress').checked = !on;
+    $('homeAltFields').hidden = !on;
+    $('altHomeToggle').textContent = on ? 'Use the address I gave earlier' : 'The home is at a different address';
+  }
+  $('altHomeToggle').addEventListener('click', () => setAltHome($('sameAddress').checked));
   $('newHome').addEventListener('change', () => { $('prevAddrFields').hidden = !$('newHome').checked; });
   $('currentlyInsured').addEventListener('change', updateInsuredFields);
 
