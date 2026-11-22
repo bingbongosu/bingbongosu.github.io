@@ -327,6 +327,19 @@
               <div class="field"><label for="propZip">ZIP code</label><input id="propZip" inputmode="numeric" maxlength="5"></div>
             </div>
           </div>
+          <label class="consent compact" for="newHome" style="margin-top:1rem">
+            <input type="checkbox" id="newHome">
+            <span>This is a new home. I just bought it or am moving in.</span>
+          </label>
+          <div id="prevAddrFields" hidden>
+            <p class="field-label" style="margin:1.2rem 0 .5rem">Where are you moving from?</p>
+            <div class="field-grid"><div class="field full"><label for="prevStreet">Previous street address</label><input id="prevStreet" autocomplete="off"></div></div>
+            <div class="field-grid cols3">
+              <div class="field"><label for="prevCity">City</label><input id="prevCity" autocomplete="off"></div>
+              <div class="field"><label for="prevState">State</label><select id="prevState"></select></div>
+              <div class="field"><label for="prevZip">ZIP code</label><input id="prevZip" inputmode="numeric" maxlength="5" autocomplete="off"></div>
+            </div>
+          </div>
         </div>
 
         <div id="lifeSection" hidden>
@@ -501,6 +514,7 @@
   }
   fillStates($('state'), 'PA');
   fillStates($('propState'), 'PA');
+  fillStates($('prevState'), 'PA');
 
   // ---- Step 1: coverage ----------------------------------------------------
   $('coverageChips').querySelectorAll('.chip').forEach((chip) => {
@@ -719,6 +733,7 @@
   }
   attachZipLookup('zip', 'city', 'state');
   attachZipLookup('propZip', 'propCity', 'propState');
+  attachZipLookup('prevZip', 'prevCity', 'prevState');
   $('addVehicle').addEventListener('click', () => {
     addVehicle();
     const cards = vehicleCards();
@@ -727,6 +742,7 @@
   });
 
   $('sameAddress').addEventListener('change', () => { $('homeAltFields').hidden = $('sameAddress').checked; });
+  $('newHome').addEventListener('change', () => { $('prevAddrFields').hidden = !$('newHome').checked; });
   $('currentlyInsured').addEventListener('change', updateInsuredFields);
 
   function hasAuto() { return state.coverage === 'Auto' || state.coverage === 'Bundle'; }
@@ -828,6 +844,10 @@
       if (!$('propertyType').value) bad.push('propertyType');
       const yb = clean($('yearBuilt').value);
       if (!/^\d{4}$/.test(yb) || Number(yb) < 1700 || Number(yb) > maxYear) bad.push('yearBuilt');
+      if ($('newHome').checked) {
+        ['prevStreet', 'prevCity', 'prevState'].forEach((id) => { if (!clean($(id).value)) bad.push(id); });
+        if (clean($('prevZip').value) && !/^\d{5}$/.test(clean($('prevZip').value))) bad.push('prevZip');
+      }
       if (!$('sameAddress').checked) {
         ['propStreet', 'propCity', 'propState'].forEach((id) => { if (!clean($(id).value)) bad.push(id); });
         if (!/^\d{5}$/.test(clean($('propZip').value))) bad.push('propZip');
@@ -929,6 +949,11 @@
       lines.push('Own / rent / condo: ' + $('propertyType').value);
       lines.push('Year built: ' + clean($('yearBuilt').value));
       if (clean($('squareFeet').value)) lines.push('Square feet: ' + clean($('squareFeet').value));
+      if ($('newHome').checked) {
+        const zip = clean($('prevZip').value);
+        lines.push('New home: Yes');
+        lines.push('Previous address: ' + clean($('prevStreet').value) + ', ' + clean($('prevCity').value) + ', ' + $('prevState').value + (zip ? ' ' + zip : ''));
+      }
     }
     if (hasLife()) {
       lines.push('');
