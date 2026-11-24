@@ -1,0 +1,1131 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"></head><body>
+<title>Paragon Quick Quote</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+  /* Layout: one centered column, three steps (coverage, contact, details), Paragon green on near-black / paper */
+  :root {
+    --ink: #0B0D10;
+    --paper: #FAFAF8;
+    --surface: #FFFFFF;
+    --accent: #03B588;
+    --accent-deep: #02795B;
+    --line: #E1E1DC;
+    --danger: #990000;
+    --font-display: 'Montserrat', system-ui, sans-serif;
+    --font-body: 'Open Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #F2F3F1;
+      --paper: #0B0D10;
+      --surface: #14171B;
+      --accent: #1FE3AC;
+      --accent-deep: #03B588;
+      --line: #24272C;
+      --danger: #E4665F;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #F2F3F1;
+    --paper: #0B0D10;
+    --surface: #14171B;
+    --accent: #1FE3AC;
+    --accent-deep: #03B588;
+    --line: #24272C;
+    --danger: #E4665F;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { min-height: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .progress-track { height: 4px; width: 100%; background: var(--line); position: sticky; top: 0; z-index: 10; }
+  .progress-fill { height: 100%; width: 33%; background: var(--accent); transition: width .4s cubic-bezier(.4,0,.2,1); }
+  @media (prefers-reduced-motion: reduce) { .progress-fill { transition: none; } }
+
+  .preview-banner {
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    text-align: center;
+    padding: .55rem 1rem;
+    background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+    border-bottom: 1.5px solid var(--line);
+  }
+
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.3rem 1.25rem; max-width: 720px; width: 100%; margin: 0 auto;
+  }
+  .mark { display: flex; align-items: center; gap: .6rem; }
+  .logo { display: block; height: 84px; width: auto; }
+  /* The official logo is black on transparent, so flip it on dark backgrounds. */
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .logo { filter: invert(1); } }
+  :root[data-theme="dark"] .logo { filter: invert(1); }
+  .mark-text { font-family: var(--font-display); font-weight: 800; font-size: .92rem; letter-spacing: .01em; }
+  .mark-text span {
+    display: block; font-family: var(--font-body); font-weight: 600; font-size: .58rem;
+    letter-spacing: .14em; color: var(--accent-deep);
+  }
+  .step-counter { font-family: var(--font-mono); font-size: .78rem; opacity: .55; }
+
+  main { flex: 1; display: flex; justify-content: center; padding: 1.5rem 1.25rem 4rem; }
+  .stage { width: 100%; max-width: 640px; min-width: 0; }
+
+  .step { display: none; animation: rise .45s cubic-bezier(.2,.8,.2,1); }
+  .step.active { display: block; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @media (prefers-reduced-motion: reduce) { .step { animation: none; } }
+
+  .eyebrow {
+    font-family: var(--font-mono); font-size: .72rem; font-weight: 500; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--accent-deep); margin: 0 0 .9rem;
+  }
+  h1 {
+    font-family: var(--font-display); font-weight: 800; font-size: clamp(1.7rem, 4.4vw, 2.5rem);
+    line-height: 1.12; margin: 0 0 .5rem; text-wrap: balance;
+  }
+  .hint { opacity: .65; font-size: 1rem; margin: 0 0 2rem; max-width: 50ch; line-height: 1.55; }
+  .alt-link { background: none; border: 0; padding: .35rem 0; margin-top: .4rem; font: inherit; font-size: .86rem; color: var(--ink); opacity: .65; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .alt-link:hover { opacity: 1; }
+  .section-title { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; margin: 2.2rem 0 .3rem; }
+  .section-title.first { margin-top: 0; }
+  .section-hint { opacity: .6; font-size: .9rem; margin: 0 0 1.1rem; }
+
+  .chip-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .8rem; }
+  .chip {
+    border: 1.5px solid var(--line); background: var(--surface); color: var(--ink);
+    padding: 1.15rem 1.2rem; text-align: left; font-family: var(--font-display); font-weight: 700;
+    font-size: 1.02rem; cursor: pointer; display: flex; flex-direction: column; gap: .3rem;
+    transition: border-color .15s ease;
+  }
+  .chip-icon { color: var(--accent-deep); margin-bottom: .35rem; flex: none; }
+  .chip.selected .chip-icon { color: var(--accent); }
+  .chip small { font-family: var(--font-body); font-weight: 400; font-size: .78rem; opacity: .6; }
+  .chip:hover { border-color: var(--accent); }
+  .chip:focus-visible, .btn:focus-visible, .add-btn:focus-visible, .link-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .chip.selected { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
+  .chip.selected::after {
+    content: "Selected"; font-family: var(--font-mono); font-weight: 500; font-size: .66rem;
+    letter-spacing: .06em; text-transform: uppercase; color: var(--accent-deep);
+  }
+
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.3rem 1.1rem; }
+  .field-grid.cols3 { grid-template-columns: 2fr 1fr 1fr; margin-top: 1.3rem; }
+  .field-grid.single { grid-template-columns: 1fr; }
+  .field { display: flex; flex-direction: column; gap: .4rem; min-width: 0; }
+  .field.full { grid-column: 1 / -1; }
+  label, .field-label { font-size: .76rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; opacity: .65; margin: 0; }
+  input[type="text"], input[type="email"], input[type="tel"], input[type="date"], select, input:not([type]) {
+    font-family: var(--font-body); font-size: 1.05rem; color: var(--ink); background: transparent;
+    border: none; border-bottom: 1.5px solid var(--line); border-radius: 0; padding: .55rem .1rem;
+    outline: none; transition: border-color .15s ease; width: 100%; min-width: 0;
+  }
+  input:focus, select:focus { border-color: var(--accent); }
+  input::placeholder { color: var(--ink); opacity: .32; }
+  .field-error input, .field-error select { border-bottom-color: var(--danger); }
+  .field-error label { color: var(--danger); opacity: 1; }
+
+  .card { border: 1.5px solid var(--line); background: var(--surface); padding: 1.1rem 1.1rem 1.3rem; margin-top: 1.3rem; }
+  .card-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem; }
+  .card-head strong {
+    font-family: var(--font-mono); font-size: .74rem; font-weight: 500; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--accent-deep);
+  }
+  .vehicle + .vehicle { margin-top: .9rem; }
+  #vehicleList { margin-bottom: .9rem; }
+
+  .add-btn {
+    border: 1.5px dashed var(--line); background: transparent; color: var(--ink); padding: .85rem 1rem;
+    width: 100%; cursor: pointer; font-family: var(--font-display); font-weight: 700; font-size: .9rem;
+    margin-top: 1.3rem;
+  }
+  #addVehicle { margin-top: 0; }
+  .add-btn:hover { border-color: var(--accent); }
+  .link-btn {
+    background: none; border: none; color: var(--ink); opacity: .65; cursor: pointer;
+    font: inherit; font-size: .85rem; text-decoration: underline; padding: 0;
+  }
+  .link-btn:hover { opacity: 1; }
+
+  .consent { display: flex; gap: .65rem; align-items: flex-start; margin-top: 1.6rem; font-size: .85rem; opacity: .8; line-height: 1.5; text-transform: none; letter-spacing: 0; font-weight: 400; }
+  .consent input { margin-top: .2rem; }
+  .consent.compact { margin-top: 1.3rem; }
+
+  .error { color: var(--danger); font-size: .88rem; margin: 1.2rem 0 0; min-height: 1.3em; }
+
+  .nav-row { display: flex; align-items: center; justify-content: space-between; margin-top: 1.6rem; }
+  .btn {
+    font-family: var(--font-display); font-weight: 700; font-size: .95rem; padding: .85rem 1.7rem;
+    border: 1.5px solid var(--ink); cursor: pointer;
+    transition: background .15s ease, color .15s ease, opacity .15s ease;
+  }
+  .btn-primary { background: var(--ink); color: var(--paper); }
+  .btn-primary:hover { background: var(--accent-deep); border-color: var(--accent-deep); color: #fff; }
+  .btn-primary:disabled { opacity: .35; cursor: not-allowed; background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  .btn-ghost { background: transparent; color: var(--ink); border-color: transparent; opacity: .6; padding-left: .3rem; }
+  .btn-ghost:hover { opacity: 1; }
+  .btn-ghost:disabled { visibility: hidden; }
+
+  .done { text-align: center; }
+  .done .badge {
+    width: 3.4rem; height: 3.4rem; border-radius: 50%; background: var(--accent); color: #06110D;
+    display: flex; align-items: center; justify-content: center; margin: 0 auto 1.4rem;
+  }
+  .done .badge.warn { background: var(--danger); color: #fff; }
+  .done .badge svg { width: 1.5rem; height: 1.5rem; }
+  .done .hint { margin-left: auto; margin-right: auto; }
+  .status-line { font-family: var(--font-mono); font-size: .76rem; letter-spacing: .02em; color: var(--accent-deep); margin: 0 0 1.4rem; }
+  .status-line.warn { color: var(--danger); }
+
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+  textarea {
+    font-family: var(--font-body); font-size: 1.05rem; color: var(--ink); background: transparent;
+    border: 1.5px solid var(--line); border-radius: 0; padding: .65rem .7rem; outline: none;
+    width: 100%; min-height: 5rem; resize: vertical; transition: border-color .15s ease;
+  }
+  textarea:focus { border-color: var(--accent); }
+  textarea::placeholder { color: var(--ink); opacity: .32; }
+  .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem 1.1rem; margin-top: .3rem; }
+  .check-grid .consent { margin-top: 0; opacity: 1; }
+  .field-error .field-label { color: var(--danger); opacity: 1; }
+
+  @media (max-width: 560px) {
+    .chip-grid, .field-grid, .field-grid.cols3, .check-grid { grid-template-columns: 1fr; }
+    .topbar { padding-left: 1rem; padding-right: 1rem; }
+    main { padding-left: 1rem; padding-right: 1rem; }
+  }
+</style>
+
+<div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+<div class="preview-banner" id="previewBanner" hidden>Preview. Nothing you enter on this page is sent anywhere.</div>
+
+<div class="topbar">
+  <div class="mark"><img class="logo" src="data:image/png;base64,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" alt="Paragon Insurance Group" width="78" height="84"></div>
+  <div class="step-counter" id="stepCounter">01 / 03</div>
+</div>
+
+<main>
+  <div class="stage">
+    <form id="quoteForm" novalidate autocomplete="on">
+
+      <!-- Step 1: coverage -->
+      <section class="step active" data-step="1" id="coverageStep">
+        <p class="eyebrow">Quick Quote</p>
+        <h1>What are we covering?</h1>
+        <p class="hint">Pick the one that fits best. The next questions change to match.</p>
+        <div class="chip-grid" id="coverageChips">
+          <button type="button" class="chip" data-value="Auto"><svg class="chip-icon" viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15v-3l2-5h14l2 5v3"/><path d="M3 15h18v3H3z"/><circle cx="7.5" cy="18" r="1.6" fill="var(--surface)"/><circle cx="16.5" cy="18" r="1.6" fill="var(--surface)"/><path d="M5.5 12h13"/></svg>Auto<small>Cars, trucks, motorcycles</small></button>
+          <button type="button" class="chip" data-value="Home"><svg class="chip-icon" viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>Home<small>Owners, renters, condo</small></button>
+          <button type="button" class="chip" data-value="Bundle"><svg class="chip-icon" viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 10.500l6-5 6 5"/><path d="M4.500 9.500v5h8v-5"/><path d="M9 21v-3l1.200-3h9.600l1.200 3v3"/><path d="M9 18h12v3H9z"/><circle cx="11.500" cy="19.500" r=".6"/><circle cx="18.500" cy="19.500" r=".6"/></svg>Auto + Home<small>Bundle and save</small></button>
+          <button type="button" class="chip" data-value="Life"><svg class="chip-icon" viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5s-8-4.8-8-10.4A4.4 4.4 0 0 1 12 7.6a4.4 4.4 0 0 1 8 2.5c0 5.600-8 10.400-8 10.400z"/></svg>Life<small>Term, whole, universal</small></button>
+          <button type="button" class="chip" data-value="Commercial"><svg class="chip-icon" viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V8l8-4 8 4v12"/><path d="M2.500 20h19"/><path d="M8 11h2M14 11h2M8 15h2M14 15h2"/></svg>Commercial<small>Business and liability</small></button>
+        </div>
+      </section>
+
+      <!-- Step 2: contact, address, optional spouse -->
+      <section class="step" data-step="2" id="contactStep">
+        <p class="eyebrow">Reaching you</p>
+        <h1 id="contactHeading">Who are we quoting?</h1>
+        <p class="hint">We save this first so your quote is never lost. A real Paragon agent follows up. No auto-dialer.</p>
+
+        <div class="field-grid">
+          <div class="field full" id="businessWrap" hidden><label for="businessName">Business name</label><input id="businessName" name="businessName" autocomplete="organization" placeholder="Rivera Landscaping LLC"></div>
+          <div class="field"><label for="firstName" id="lblFirst">First name</label><input id="firstName" name="firstName" autocomplete="given-name" placeholder="Jordan"></div>
+          <div class="field"><label for="lastName" id="lblLast">Last name</label><input id="lastName" name="lastName" autocomplete="family-name" placeholder="Rivera"></div>
+          <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" placeholder="jordan@email.com"></div>
+          <div class="field"><label for="phone" id="lblPhone">Mobile phone</label><input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="(610) 555-0134"></div>
+          <div class="field full"><label for="street" id="lblStreet">Street address</label><input id="street" name="street" autocomplete="address-line1" placeholder="123 Baltimore Pike"></div>
+        </div>
+        <div class="field-grid cols3">
+          <div class="field"><label for="city">City</label><input id="city" name="city" autocomplete="address-level2" placeholder="Media"></div>
+          <div class="field"><label for="state">State</label><select id="state" name="state" autocomplete="address-level1"></select></div>
+          <div class="field"><label for="zip">ZIP code</label><input id="zip" name="zip" inputmode="numeric" maxlength="5" autocomplete="postal-code" placeholder="19063"></div>
+        </div>
+
+        <p class="section-hint" id="driverHint" style="margin:1.4rem 0 .5rem">Optional. Date of birth and driver's license help an agent prepare an accurate quote. Skip anything you would rather share by phone.</p>
+        <div class="field-grid cols3" id="driverGrid">
+          <div class="field" id="dobWrap"><label for="dob">Date of birth</label><input id="dob" inputmode="numeric" maxlength="10" autocomplete="bday" placeholder="MM/DD/YYYY"></div>
+          <div class="field" id="dlWrap1"><label for="dlNumber">License no.</label><input id="dlNumber" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>
+          <div class="field" id="dlWrap2"><label for="dlState">License state</label><select id="dlState"></select></div>
+        </div>
+
+        <button type="button" class="add-btn" id="spouseToggle">+ Add a spouse or partner</button>
+        <div class="card" id="spouseCard" hidden>
+          <div class="card-head"><strong id="spouseTitle">Spouse or partner</strong><button type="button" class="link-btn" id="spouseRemove">Remove</button></div>
+          <div class="field-grid">
+            <div class="field"><label for="spouseFirst">First name</label><input id="spouseFirst" name="spouseFirst"></div>
+            <div class="field"><label for="spouseLast">Last name</label><input id="spouseLast" name="spouseLast"></div>
+            <div class="field full" id="spouseRelWrap"><label for="spouseRel">Relationship to you</label><select id="spouseRel"><option selected>Spouse</option><option>Domestic Partner</option><option>Child</option><option>Parent</option><option>Relative</option><option>Other</option></select></div>
+            <div class="field full" id="spouseEmailWrap"><label for="spouseEmail">Email (optional)</label><input id="spouseEmail" name="spouseEmail" type="email"></div>
+          </div>
+          <div class="field-grid cols3" id="spouseDriverGrid" style="margin-top:1.1rem">
+            <div class="field" id="spouseDobWrap"><label for="spouseDob">Date of birth</label><input id="spouseDob" inputmode="numeric" maxlength="10" autocomplete="off" placeholder="MM/DD/YYYY"></div>
+            <div class="field" id="spouseDlWrap1"><label for="spouseDlNumber">License no.</label><input id="spouseDlNumber" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>
+            <div class="field" id="spouseDlWrap2"><label for="spouseDlState">License state</label><select id="spouseDlState"></select></div>
+          </div>
+        </div>
+
+        <label class="consent" for="consent">
+          <input type="checkbox" id="consent">
+          <span>I agree to be contacted by Paragon Insurance Group about this request.</span>
+        </label>
+        <p class="error" id="contactError" role="alert"></p>
+      </section>
+
+      <!-- Step 3: details -->
+      <section class="step" data-step="3" id="detailsStep">
+        <p class="eyebrow" id="detailsEyebrow">Details</p>
+        <h1 id="detailsHeading">A few details</h1>
+        <p class="hint">Your contact info is already saved. Rough answers are fine. Add as many as you need and it all goes on the same quote.</p>
+
+        <div id="autoSection" hidden>
+          <h2 class="section-title first">Vehicles</h2>
+          <p class="section-hint">Add every vehicle you want quoted. A VIN is optional but speeds things up.</p>
+          <div id="vehicleList"></div>
+          <button type="button" class="add-btn" id="addVehicle">+ Add another vehicle</button>
+          <div class="field-grid single" style="margin-top:1.3rem">
+            <div class="field">
+              <label for="primaryUse">Main use of the vehicles</label>
+              <select id="primaryUse"><option value="" selected disabled>Choose one</option><option>Commuting</option><option>Pleasure</option><option>Business</option></select>
+            </div>
+          </div>
+        </div>
+
+        <div id="homeSection" hidden>
+          <h2 class="section-title" id="homeTitle">Home</h2>
+          <p class="section-hint">The basics are enough to start a quote.</p>
+          <div class="field-grid">
+            <div class="field">
+              <label for="propertyType">Own, rent or condo</label>
+              <select id="propertyType"><option value="" selected disabled>Choose one</option><option>Own</option><option>Rent</option><option>Condo</option></select>
+            </div>
+            <div class="field"><label for="yearBuilt">Year built (approx.)</label><input id="yearBuilt" inputmode="numeric" maxlength="4" placeholder="1998"></div>
+            <div class="field full"><label for="squareFeet">Square feet (optional)</label><input id="squareFeet" inputmode="numeric" placeholder="1800"></div>
+          </div>
+          <input type="checkbox" id="sameAddress" checked hidden aria-hidden="true" tabindex="-1">
+          <button type="button" class="alt-link" id="altHomeToggle">The home is at a different address</button>
+          <div id="homeAltFields" hidden>
+            <div class="field-grid" style="margin-top:1.3rem"><div class="field full"><label for="propStreet">Home street address</label><input id="propStreet"></div></div>
+            <div class="field-grid cols3">
+              <div class="field"><label for="propCity">City</label><input id="propCity"></div>
+              <div class="field"><label for="propState">State</label><select id="propState"></select></div>
+              <div class="field"><label for="propZip">ZIP code</label><input id="propZip" inputmode="numeric" maxlength="5"></div>
+            </div>
+          </div>
+          <label class="consent compact" for="newHome" style="margin-top:1rem">
+            <input type="checkbox" id="newHome">
+            <span>This is a new home. I just bought it or am moving in.</span>
+          </label>
+          <div id="prevAddrFields" hidden>
+            <p class="field-label" style="margin:1.2rem 0 .5rem">Where are you moving from?</p>
+            <div class="field-grid"><div class="field full"><label for="prevStreet">Previous street address</label><input id="prevStreet" autocomplete="off"></div></div>
+            <div class="field-grid cols3">
+              <div class="field"><label for="prevCity">City</label><input id="prevCity" autocomplete="off"></div>
+              <div class="field"><label for="prevState">State</label><select id="prevState"></select></div>
+              <div class="field"><label for="prevZip">ZIP code</label><input id="prevZip" inputmode="numeric" maxlength="5" autocomplete="off"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="lifeSection" hidden>
+          <h2 class="section-title first">Life insurance</h2>
+          <p class="section-hint">A rough idea is enough. An agent will go over the details and any health questions with you directly.</p>
+          <div class="field-grid">
+            <div class="field">
+              <label for="lifeFor">Who is it for?</label>
+              <select id="lifeFor"><option value="" selected disabled>Choose one</option><option>Just me</option><option>Me and my spouse or partner</option><option>Someone else</option></select>
+            </div>
+            <div class="field">
+              <label for="lifeType">Type</label>
+              <select id="lifeType"><option value="" selected disabled>Choose one</option><option>Term</option><option>Whole life</option><option>Universal</option><option>Not sure</option></select>
+            </div>
+            <div class="field">
+              <label for="lifeAmount">Coverage amount</label>
+              <select id="lifeAmount"><option value="" selected disabled>Choose one</option><option>Under $100,000</option><option>$100,000 to $250,000</option><option>$250,000 to $500,000</option><option>$500,000 to $1,000,000</option><option>Over $1,000,000</option><option>Not sure</option></select>
+            </div>
+            <div class="field">
+              <label for="lifePurpose">What is it for? (optional)</label>
+              <select id="lifePurpose"><option value="" selected>Choose one</option><option>Family income protection</option><option>Mortgage or debt</option><option>Business</option><option>Final expenses</option><option>Other</option></select>
+            </div>
+          </div>
+        </div>
+
+        <div id="commercialSection" hidden>
+          <h2 class="section-title first">The business</h2>
+          <p class="section-hint">A few basics so we can match you with the right markets.</p>
+          <div class="field-grid">
+            <div class="field full"><label for="industry">Industry or type of business</label><input id="industry" placeholder="Landscaping, restaurant, contractor"></div>
+            <div class="field">
+              <label for="employees">Employees</label>
+              <select id="employees"><option value="" selected disabled>Choose one</option><option>Just me</option><option>2 to 5</option><option>6 to 10</option><option>11 to 25</option><option>26 to 50</option><option>Over 50</option></select>
+            </div>
+            <div class="field">
+              <label for="revenue">Annual revenue (optional)</label>
+              <select id="revenue"><option value="" selected>Choose one</option><option>Under $250,000</option><option>$250,000 to $1 million</option><option>$1 million to $5 million</option><option>Over $5 million</option><option>Prefer not to say</option></select>
+            </div>
+            <div class="field full" id="coverageField">
+              <p class="field-label">Coverage you want to look at</p>
+              <div class="check-grid">
+                <label class="consent" for="cov-gl"><input type="checkbox" id="cov-gl" value="General liability"><span>General liability</span></label>
+                <label class="consent" for="cov-prop"><input type="checkbox" id="cov-prop" value="Business property"><span>Business property</span></label>
+                <label class="consent" for="cov-wc"><input type="checkbox" id="cov-wc" value="Workers' comp"><span>Workers' comp</span></label>
+                <label class="consent" for="cov-auto"><input type="checkbox" id="cov-auto" value="Commercial auto"><span>Commercial auto</span></label>
+                <label class="consent" for="cov-prof"><input type="checkbox" id="cov-prof" value="Professional liability"><span>Professional liability</span></label>
+                <label class="consent" for="cov-cyber"><input type="checkbox" id="cov-cyber" value="Cyber"><span>Cyber</span></label>
+                <label class="consent" for="cov-umb"><input type="checkbox" id="cov-umb" value="Umbrella / excess"><span>Umbrella / excess</span></label>
+                <label class="consent" for="cov-unsure"><input type="checkbox" id="cov-unsure" value="Not sure yet"><span>Not sure yet</span></label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="section-title">Current coverage</h2>
+        <p class="section-hint">Knowing when your policy renews tells us when to have your quote ready.</p>
+        <div class="field-grid">
+          <div class="field full">
+            <label for="currentlyInsured" id="lblInsured">Insured right now?</label>
+            <select id="currentlyInsured"><option value="" selected disabled>Choose one</option><option>Yes</option><option>No</option><option>Lapsed</option></select>
+          </div>
+          <div class="field" id="carrierField" hidden><label for="priorCarrier">Current company</label><input id="priorCarrier" placeholder="Erie, Progressive, State Farm"></div>
+          <div class="field" id="renewField" hidden><label for="renewalDate">Renewal date</label><input id="renewalDate" type="date"></div>
+        </div>
+
+        <h2 class="section-title">Anything else?</h2>
+        <div class="field-grid single">
+          <div class="field">
+            <label for="extraNotes">Anything else we should know? (optional)</label>
+            <textarea id="extraNotes" maxlength="500" placeholder="Timing, questions, special situations"></textarea>
+          </div>
+        </div>
+
+        <h2 class="section-title">Follow-up</h2>
+        <div class="field-grid single">
+          <div class="field">
+            <label for="contactMethod">How should we reach you?</label>
+            <select id="contactMethod">
+              <option value="" selected disabled>Choose one</option>
+              <option value="Call">Call me</option>
+              <option value="Text">Text me</option>
+              <option value="Email">Email me</option>
+              <option value="Either">No preference</option>
+            </select>
+          </div>
+        </div>
+        <p class="error" id="detailsError" role="alert"></p>
+      </section>
+
+      <!-- Done -->
+      <section class="step done" data-step="4" id="doneStep">
+        <div class="badge" id="doneBadge">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <p class="status-line" id="statusLine"></p>
+        <h1 id="doneHeading"></h1>
+        <p class="hint" id="doneHint"></p>
+      </section>
+
+      <div class="hp" aria-hidden="true"><label for="website">Website</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
+
+      <div class="nav-row" id="navRow">
+        <button type="button" class="btn btn-ghost" id="backBtn" disabled>Back</button>
+        <button type="button" class="btn btn-primary" id="nextBtn" disabled>Continue</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  // ---- Settings ------------------------------------------------------------
+  // Webhooks. stage1 creates the applicant + opportunity as soon as contact info is entered.
+  // stage2 adds the details (vehicles, home, life, business) to that applicant as a note.
+  // Commercial uses EZLynx's commercial actions, so it needs its own pair. Several URLs can point at
+  // the same Zap if that Zap branches on the applicantType field the form sends.
+  // The Commercial option stays hidden on the live site until its stage1 URL is filled in, and then
+  // until COMMERCIAL_PUBLIC is true. While false, breinlinger.co/quote/?commercial=1 shows it for testing.
+  const COMMERCIAL_PUBLIC = false;
+  const HOOKS = {
+    personal:   { stage1: 'https://hooks.zapier.com/hooks/catch/29109447/414l3hb/', stage2: 'https://hooks.zapier.com/hooks/catch/29109447/49il824/' },
+    commercial: { stage1: 'https://hooks.zapier.com/hooks/catch/29109447/49iepeh/', stage2: '' }
+  };
+  // EZLynx line-of-business codes. AUTOP comes from Zapier's help text; confirm HOME and LIFE in EZLynx.
+  // Commercial sends no code (the business details go in the note).
+  const LOB_CODES = { Auto: 'AUTOP', Home: 'HOME', Life: 'LIFE' };
+  const SOURCE_NAME = 'Quick Quote form';
+  // Which copy of the form this is, taken from the address: /quote, /joedeblla, /apmre and so on. It rides
+  // along on every lead so you can tell which page it came from. Not mapped in Zapier unless you want it.
+  const LANDING_PAGE = (location.pathname.split('/').filter(Boolean)
+    .map((seg) => seg.replace(/\.html?$/i, '').toLowerCase().replace(/[^a-z0-9-]/g, ''))
+    .filter((seg) => seg && seg !== 'index').pop()) || 'quote';
+  // Leads are only sent from these hosts (or with ?live=1). Anywhere else the page runs as a preview.
+  const LIVE_HOSTS = ['breinlinger.co', 'www.breinlinger.co'];
+  const MAX_VEHICLES = 6;
+  // --------------------------------------------------------------------------
+
+  const params = new URLSearchParams(location.search);
+  // ?preview=1 forces demo mode on any host: every option is shown and nothing is sent.
+  const isLive = params.get('preview') !== '1' && (LIVE_HOSTS.indexOf(location.hostname) !== -1 || params.get('live') === '1');
+  const totalSteps = 3;
+  const COVERAGE_LABEL = { Auto: 'Auto', Home: 'Home', Bundle: 'Auto + Home', Life: 'Life', Commercial: 'Commercial' };
+
+  const state = {
+    coverage: null, leadId: uuid(), busy: false,
+    stage1Payload: null, stage1Done: false, stage1Result: null
+  };
+  let current = 1;
+  let vehicleSeq = 0;
+
+  const $ = (id) => document.getElementById(id);
+  const clean = (v) => String(v == null ? '' : v).trim();
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  function uuid() {
+    try { if (window.crypto && crypto.randomUUID) return crypto.randomUUID(); } catch (e) {}
+    return 'lead-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+  }
+  function digits(v) {
+    let d = clean(v).replace(/\D/g, '');
+    if (d.length === 11 && d[0] === '1') d = d.slice(1);
+    return d;
+  }
+  const emailOk = (v) => /^\S+@\S+\.\S+$/.test(clean(v));
+
+  const steps = Array.from(document.querySelectorAll('.step'));
+  const backBtn = $('backBtn');
+  const nextBtn = $('nextBtn');
+
+  // ---- State dropdowns -----------------------------------------------------
+  const US_STATES = 'AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY'.split(' ');
+  function fillStates(sel, selected) {
+    sel.innerHTML = '<option value="" disabled>State</option>' +
+      US_STATES.map((s) => '<option value="' + s + '">' + s + '</option>').join('');
+    sel.value = selected || '';
+  }
+  fillStates($('state'), 'PA');
+  fillStates($('propState'), 'PA');
+  fillStates($('prevState'), 'PA');
+
+  // ---- Step 1: coverage ----------------------------------------------------
+  $('coverageChips').querySelectorAll('.chip').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      $('coverageChips').querySelectorAll('.chip').forEach((c) => c.classList.remove('selected'));
+      chip.classList.add('selected');
+      state.coverage = chip.dataset.value;
+      nextBtn.disabled = false;
+    });
+  });
+
+  if (isLive) {
+    $('coverageChips').querySelectorAll('.chip').forEach((chip) => {
+      const type = chip.dataset.value === 'Commercial' ? 'commercial' : 'personal';
+      if (!HOOKS[type].stage1) chip.hidden = true;
+      if (type === 'commercial' && !COMMERCIAL_PUBLIC && params.get('commercial') !== '1') chip.hidden = true;
+    });
+  }
+
+  // ---- Step 2: contact, spouse ---------------------------------------------
+  $('spouseToggle').addEventListener('click', () => {
+    $('spouseCard').hidden = false;
+    $('spouseToggle').hidden = true;
+    $('spouseFirst').focus();
+  });
+  $('spouseRemove').addEventListener('click', () => {
+    ['spouseFirst', 'spouseLast', 'spouseEmail'].forEach((id) => { $(id).value = ''; });
+    $('spouseCard').hidden = true;
+    $('spouseToggle').hidden = false;
+  });
+
+  // ---- About you: date of birth and driver's license (all optional) -------------
+  ['dlState', 'spouseDlState'].forEach((id) => {
+    $(id).innerHTML = '<option value="">State</option>' +
+      US_STATES.map((st) => '<option value="' + st + '">' + st + '</option>').join('');
+  });
+  // Builds MM/DD/YYYY as people type. Digits fill month, day, then year, and the slashes are added for
+  // them. Typing their own slash pads a single digit (4/ becomes 04/). Deleting is left alone so
+  // backspace can remove a slash.
+  function formatDob(el, ev) {
+    const raw = el.value.replace(/[^\d/.-]/g, '');
+    if (ev && /^delete/.test(ev.inputType || '')) { el.value = raw.slice(0, 10); return; }
+    const parts = [];
+    let cur = '';
+    for (const ch of raw) {
+      if (/\d/.test(ch)) {
+        cur += ch;
+        if (parts.length < 2 && cur.length === 2) { parts.push(cur); cur = ''; }
+      } else if (cur && parts.length < 2) {
+        parts.push(cur.padStart(2, '0')); cur = '';
+      }
+    }
+    el.value = parts.length ? parts.join('/') + '/' + cur.slice(0, 4) : cur.slice(0, 4);
+    if (parts.length === 2 && !cur) el.value = parts.join('/') + '/';
+  }
+  function padDob(v) {
+    const m = /^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/.exec(clean(v));
+    return m ? m[1].padStart(2, '0') + '/' + m[2].padStart(2, '0') + '/' + m[3] : clean(v);
+  }
+  function cleanLicense(el) { el.value = el.value.toUpperCase().replace(/[^A-Z0-9*-]/g, ''); }
+  ['dob', 'spouseDob'].forEach((id) => {
+    $(id).addEventListener('input', (ev) => formatDob($(id), ev));
+    $(id).addEventListener('blur', () => { $(id).value = padDob($(id).value); });
+  });
+  ['dlNumber', 'spouseDlNumber'].forEach((id) => $(id).addEventListener('input', () => cleanLicense($(id))));
+  // Returns '' when blank, the ISO date when valid, or null when it is not a plausible birth date.
+  function parseDob(v) {
+    v = padDob(v);
+    if (!v) return '';
+    const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(v);
+    if (!m) return null;
+    const mo = Number(m[1]), da = Number(m[2]), yr = Number(m[3]);
+    const dt = new Date(yr, mo - 1, da);
+    if (dt.getFullYear() !== yr || dt.getMonth() !== mo - 1 || dt.getDate() !== da) return null;
+    const age = (Date.now() - dt.getTime()) / 31557600000;
+    if (age < 14 || age > 110) return null;
+    return m[3] + '-' + m[1] + '-' + m[2];
+  }
+  const licenseOk = (v) => !v || /^[A-Z0-9*-]{5,20}$/.test(v);
+
+  function renderContact() {
+    const biz = isCommercial();
+    $('businessWrap').hidden = !biz;
+    $('contactHeading').textContent = biz ? 'Tell us about the business' : 'Who are we quoting?';
+    $('lblFirst').textContent = biz ? 'Contact first name' : 'First name';
+    $('lblLast').textContent = biz ? 'Contact last name' : 'Last name';
+    $('lblPhone').textContent = biz ? 'Phone' : 'Mobile phone';
+    $('lblStreet').textContent = biz ? 'Business street address' : 'Street address';
+    $('spouseToggle').textContent = biz ? '+ Add a second contact' : '+ Add a spouse or partner';
+    $('spouseTitle').textContent = biz ? 'Second contact' : 'Spouse or partner';
+    $('spouseEmailWrap').hidden = biz;
+    $('spouseRelWrap').hidden = biz;
+    // Personal quotes only. Date of birth always shows; license fields only for auto.
+    $('driverGrid').hidden = biz;
+    $('driverHint').hidden = biz;
+    $('spouseDriverGrid').hidden = biz;
+    ['dlWrap1', 'dlWrap2', 'spouseDlWrap1', 'spouseDlWrap2'].forEach((id) => { $(id).hidden = !hasAuto(); });
+    $('driverHint').textContent = hasAuto()
+      ? "Optional. Date of birth and driver's license help an agent prepare an accurate quote. Skip anything you would rather share by phone."
+      : 'Optional. Date of birth helps an agent prepare an accurate quote. Skip it if you would rather share it by phone.';
+    const rel = $('spouseRel').value;
+    $('spouseTitle').textContent = biz ? 'Second contact' : 'Spouse or partner';
+    ['dlState', 'spouseDlState'].forEach((id) => { if (!$(id).value && $('state').value) $(id).value = $('state').value; });
+  }
+
+  // ---- Step 3: vehicles, home, coverage ------------------------------------
+  function makeField(id, labelText, opts) {
+    const wrap = document.createElement('div');
+    wrap.className = 'field' + (opts.full ? ' full' : '');
+    const label = document.createElement('label');
+    label.htmlFor = id;
+    label.textContent = labelText;
+    const input = document.createElement('input');
+    input.id = id;
+    input.type = 'text';
+    input.className = opts.cls;
+    if (opts.placeholder) input.placeholder = opts.placeholder;
+    if (opts.maxLength) input.maxLength = opts.maxLength;
+    if (opts.inputMode) input.inputMode = opts.inputMode;
+    wrap.append(label, input);
+    return wrap;
+  }
+
+  function vehicleCards() { return Array.from($('vehicleList').children); }
+
+  function renumberVehicles() {
+    const cards = vehicleCards();
+    cards.forEach((card, i) => {
+      card.querySelector('strong').textContent = 'Vehicle ' + (i + 1);
+      card.querySelector('.link-btn').hidden = cards.length === 1;
+    });
+    $('addVehicle').hidden = cards.length >= MAX_VEHICLES;
+  }
+
+  function addVehicle() {
+    if (vehicleCards().length >= MAX_VEHICLES) return;
+    const n = ++vehicleSeq;
+    const card = document.createElement('div');
+    card.className = 'card vehicle';
+
+    const head = document.createElement('div');
+    head.className = 'card-head';
+    const title = document.createElement('strong');
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'link-btn';
+    remove.textContent = 'Remove';
+    remove.addEventListener('click', () => { card.remove(); renumberVehicles(); });
+    head.append(title, remove);
+
+    const grid = document.createElement('div');
+    grid.className = 'field-grid';
+    const vinField = makeField('veh' + n + '-vin', 'VIN (optional, fills in the rest)', { cls: 'v-vin', placeholder: '17 characters', maxLength: 17 });
+    vinField.classList.add('full');
+    grid.append(
+      vinField,
+      makeField('veh' + n + '-year', 'Year', { cls: 'v-year', placeholder: '2021', maxLength: 4, inputMode: 'numeric' }),
+      makeField('veh' + n + '-make', 'Make', { cls: 'v-make', placeholder: 'Honda' }),
+      makeField('veh' + n + '-model', 'Model', { cls: 'v-model', placeholder: 'CR-V' })
+    );
+    card.append(head, grid);
+    $('vehicleList').appendChild(card);
+    attachVinDecode(card);
+    renumberVehicles();
+  }
+
+  // ---- Free lookups (best effort: if one fails, people just type it) --------
+  // VIN -> year / make / model, from the US government's NHTSA decoder.
+  function attachVinDecode(card) {
+    const vin = card.querySelector('.v-vin');
+    const note = document.createElement('p');
+    note.className = 'section-hint';
+    note.style.margin = '.35rem 0 0';
+    note.style.fontSize = '.8rem';
+    vin.closest('.field').appendChild(note);
+    let last = '';
+    vin.addEventListener('input', async () => {
+      const v = vin.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      vin.value = v;
+      if (v.length !== 17) { note.textContent = ''; last = ''; return; }
+      if (v === last) return;
+      last = v;
+      note.textContent = 'Looking up...';
+      try {
+        const r = await fetch('https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/' + v + '?format=json');
+        const d = (await r.json()).Results[0];
+        if (!d || !d.Make || !d.ModelYear) { note.textContent = 'Could not read that VIN. Type the vehicle in instead.'; return; }
+        const put = (sel, val) => { const el = card.querySelector(sel); if (el) { el.value = val; el.dispatchEvent(new Event('input', { bubbles: true })); el.classList.remove('field-error'); } };
+        const title = (t) => t.charAt(0) + t.slice(1).toLowerCase();
+        put('.v-year', d.ModelYear);
+        put('.v-make', title(d.Make));
+        put('.v-model', d.Model + (d.Trim ? ' ' + d.Trim : ''));
+        note.textContent = 'Found: ' + d.ModelYear + ' ' + title(d.Make) + ' ' + d.Model;
+      } catch (e) {
+        note.textContent = '';
+      }
+    });
+  }
+
+  // ZIP -> city + state, from a free ZIP lookup. Never overwrites what was typed.
+  function attachZipLookup(zipId, cityId, stateId) {
+    const zip = $(zipId);
+    $(stateId).addEventListener('change', () => { $(stateId).dataset.touched = '1'; });
+    zip.addEventListener('input', async () => {
+      const z = zip.value.replace(/\D/g, '').slice(0, 5);
+      if (z.length !== 5) return;
+      try {
+        const r = await fetch('https://api.zippopotam.us/us/' + z);
+        if (!r.ok) return;
+        const place = (await r.json()).places[0];
+        if (!clean($(cityId).value)) $(cityId).value = place['place name'];
+        const st = $(stateId);
+        if (!st.dataset.touched) st.value = place['state abbreviation'];
+      } catch (e) { /* ignore */ }
+    });
+  }
+  attachZipLookup('zip', 'city', 'state');
+  attachZipLookup('propZip', 'propCity', 'propState');
+  attachZipLookup('prevZip', 'prevCity', 'prevState');
+  $('addVehicle').addEventListener('click', () => {
+    addVehicle();
+    const cards = vehicleCards();
+    const last = cards[cards.length - 1];
+    if (last) last.querySelector('.v-year').focus();
+  });
+
+  // The home is assumed to be at the contact address. This link is only for a different property.
+  function setAltHome(on) {
+    $('sameAddress').checked = !on;
+    $('homeAltFields').hidden = !on;
+    $('altHomeToggle').textContent = on ? 'Use the address I gave earlier' : 'The home is at a different address';
+  }
+  $('altHomeToggle').addEventListener('click', () => setAltHome($('sameAddress').checked));
+  $('newHome').addEventListener('change', () => { $('prevAddrFields').hidden = !$('newHome').checked; });
+  $('currentlyInsured').addEventListener('change', updateInsuredFields);
+
+  function hasAuto() { return state.coverage === 'Auto' || state.coverage === 'Bundle'; }
+  function hasHome() { return state.coverage === 'Home' || state.coverage === 'Bundle'; }
+  function hasLife() { return state.coverage === 'Life'; }
+  function isCommercial() { return state.coverage === 'Commercial'; }
+  function applicantType() { return isCommercial() ? 'commercial' : 'personal'; }
+  function hookUrl(stage) { return HOOKS[applicantType()][stage]; }
+  function commercialCoverages() {
+    return Array.from(document.querySelectorAll('#coverageField input:checked')).map((i) => i.value);
+  }
+
+  function updateInsuredFields() {
+    const insured = $('currentlyInsured').value === 'Yes';
+    $('carrierField').hidden = !insured;
+    $('renewField').hidden = !insured || hasLife();
+  }
+
+  const DETAIL_HEADINGS = {
+    Auto: 'Tell us about your vehicles', Home: 'Tell us about your home',
+    Bundle: 'Your vehicles and your home', Life: 'What kind of life coverage?',
+    Commercial: 'Tell us about the business'
+  };
+
+  function renderDetails() {
+    $('autoSection').hidden = !hasAuto();
+    $('homeSection').hidden = !hasHome();
+    $('lifeSection').hidden = !hasLife();
+    $('commercialSection').hidden = !isCommercial();
+    $('detailsEyebrow').textContent = COVERAGE_LABEL[state.coverage] + ' details';
+    $('detailsHeading').textContent = DETAIL_HEADINGS[state.coverage];
+    $('lblInsured').textContent = hasLife() ? 'Do you have life insurance now?' : 'Insured right now?';
+    // The Home heading is only the first heading when it is the first section shown.
+    $('homeTitle').classList.toggle('first', !hasAuto());
+    if (hasAuto() && vehicleCards().length === 0) addVehicle();
+    updateInsuredFields();
+  }
+
+
+  // ---- Validation ----------------------------------------------------------
+  $('quoteForm').addEventListener('input', clearFieldError);
+  $('quoteForm').addEventListener('change', clearFieldError);
+  function clearFieldError(e) {
+    const f = e.target.closest && e.target.closest('.field');
+    if (f) f.classList.remove('field-error');
+  }
+  function flag(ids) {
+    ids.forEach((id) => {
+      const f = $(id) && $(id).closest('.field');
+      if (f) f.classList.add('field-error');
+    });
+    if (ids.length && $(ids[0])) $(ids[0]).focus();
+  }
+  function clearFlags(root) {
+    root.querySelectorAll('.field-error').forEach((f) => f.classList.remove('field-error'));
+  }
+
+  function validateContact() {
+    clearFlags($('contactStep'));
+    const bad = [];
+    if (isCommercial() && !clean($('businessName').value)) bad.push('businessName');
+    ['firstName', 'lastName', 'street', 'city', 'state'].forEach((id) => { if (!clean($(id).value)) bad.push(id); });
+    if (!emailOk($('email').value)) bad.push('email');
+    if (digits($('phone').value).length !== 10) bad.push('phone');
+    if (!/^\d{5}$/.test(clean($('zip').value))) bad.push('zip');
+    if (!isCommercial() && parseDob($('dob').value) === null) bad.push('dob');
+    if (hasAuto() && !licenseOk($('dlNumber').value)) bad.push('dlNumber');
+    if (!$('spouseCard').hidden) {
+      if (!isCommercial() && parseDob($('spouseDob').value) === null) bad.push('spouseDob');
+      if (hasAuto() && !licenseOk($('spouseDlNumber').value)) bad.push('spouseDlNumber');
+      ['spouseFirst', 'spouseLast'].forEach((id) => { if (!clean($(id).value)) bad.push(id); });
+      if (!isCommercial() && clean($('spouseEmail').value) && !emailOk($('spouseEmail').value)) bad.push('spouseEmail');
+    }
+    let msg = '';
+    if (bad.length) msg = "Check the highlighted fields. Phone needs 10 digits, ZIP needs 5, birth dates look like 04/18/1985, and a license number is letters and digits only.";
+    else if (!$('consent').checked) msg = 'Tick the box so we can contact you about this quote.';
+    $('contactError').textContent = msg;
+    if (bad.length) flag(bad);
+    return !msg;
+  }
+
+  function validateDetails() {
+    clearFlags($('detailsStep'));
+    const bad = [];
+    const maxYear = new Date().getFullYear() + 1;
+    if (hasAuto()) {
+      vehicleCards().forEach((card) => {
+        const y = card.querySelector('.v-year');
+        const yn = Number(clean(y.value));
+        if (!/^\d{4}$/.test(clean(y.value)) || yn < 1950 || yn > maxYear) bad.push(y.id);
+        const make = card.querySelector('.v-make');
+        const model = card.querySelector('.v-model');
+        if (!clean(make.value)) bad.push(make.id);
+        if (!clean(model.value)) bad.push(model.id);
+      });
+      if (!$('primaryUse').value) bad.push('primaryUse');
+    }
+    if (hasHome()) {
+      if (!$('propertyType').value) bad.push('propertyType');
+      const yb = clean($('yearBuilt').value);
+      if (!/^\d{4}$/.test(yb) || Number(yb) < 1700 || Number(yb) > maxYear) bad.push('yearBuilt');
+      if ($('newHome').checked) {
+        ['prevStreet', 'prevCity', 'prevState'].forEach((id) => { if (!clean($(id).value)) bad.push(id); });
+        if (clean($('prevZip').value) && !/^\d{5}$/.test(clean($('prevZip').value))) bad.push('prevZip');
+      }
+      if (!$('sameAddress').checked) {
+        ['propStreet', 'propCity', 'propState'].forEach((id) => { if (!clean($(id).value)) bad.push(id); });
+        if (!/^\d{5}$/.test(clean($('propZip').value))) bad.push('propZip');
+      }
+    }
+    if (hasLife()) {
+      ['lifeFor', 'lifeType', 'lifeAmount'].forEach((id) => { if (!$(id).value) bad.push(id); });
+    }
+    if (isCommercial()) {
+      if (!clean($('industry').value)) bad.push('industry');
+      if (!$('employees').value) bad.push('employees');
+      if (!commercialCoverages().length) bad.push('coverageField');
+    }
+    if (!$('currentlyInsured').value) bad.push('currentlyInsured');
+    if (!$('contactMethod').value) bad.push('contactMethod');
+    const msg = bad.length ? 'Check the highlighted fields. Years need 4 digits.' : '';
+    $('detailsError').textContent = msg;
+    if (bad.length) flag(bad);
+    return !msg;
+  }
+
+  // ---- Payloads ------------------------------------------------------------
+  function buildStage1() {
+    const spouseOn = !$('spouseCard').hidden;
+    const biz = isCommercial();
+    // EZLynx takes one code per line, so a bundle sends Auto as the line of business and Home
+    // separately as lobCode2. The Home part is also written into the details note.
+    const bundle = state.coverage === 'Bundle';
+    const lob = bundle ? LOB_CODES.Auto : (LOB_CODES[state.coverage] || '');
+    // Driver's license has no EZLynx field, so it travels as a ready-made note. Zap 1 adds it right after
+    // the applicant is created, and a Filter step skips the note when this is empty.
+    const dlNum = hasAuto() && !biz ? clean($('dlNumber').value) : '';
+    const spDl = hasAuto() && spouseOn && !biz ? clean($('spouseDlNumber').value) : '';
+    const dlLines = [];
+    if (dlNum) dlLines.push("Driver's license: " + ($('dlState').value ? $('dlState').value + ' ' : '') + dlNum);
+    if (spDl) dlLines.push($('spouseRel').value + " driver's license: " + ($('spouseDlState').value ? $('spouseDlState').value + ' ' : '') + spDl);
+    return {
+      leadId: state.leadId, stage: '1', source: SOURCE_NAME, landingPage: LANDING_PAGE,
+      driverNoteTitle: dlLines.length ? 'QQ | Driver info' : '',
+      driverNoteBody: dlLines.join('\n'),
+      applicantType: applicantType(),
+      businessName: biz ? clean($('businessName').value) : '',
+      firstName: clean($('firstName').value), lastName: clean($('lastName').value),
+      email: clean($('email').value).toLowerCase(), phone: digits($('phone').value),
+      street: clean($('street').value), city: clean($('city').value),
+      state: $('state').value, zip: clean($('zip').value),
+      coverage: state.coverage, lobCode: lob, lobCode2: bundle ? LOB_CODES.Home : '',
+      spouseFirstName: spouseOn && !biz ? clean($('spouseFirst').value) : '',
+      spouseLastName: spouseOn && !biz ? clean($('spouseLast').value) : '',
+      spouseEmail: spouseOn && !biz ? clean($('spouseEmail').value).toLowerCase() : '',
+      spouseRelationship: spouseOn && !biz ? $('spouseRel').value : '',
+      dateOfBirth: biz ? '' : parseDob($('dob').value) || '',
+      spouseDateOfBirth: spouseOn && !biz ? parseDob($('spouseDob').value) || '' : '',
+      secondaryContactFirstName: spouseOn && biz ? clean($('spouseFirst').value) : '',
+      secondaryContactLastName: spouseOn && biz ? clean($('spouseLast').value) : '',
+      submittedAt: new Date().toISOString()
+    };
+  }
+
+  function collectVehicles() {
+    return vehicleCards().map((card) => {
+      const year = clean(card.querySelector('.v-year').value);
+      const make = clean(card.querySelector('.v-make').value);
+      const model = clean(card.querySelector('.v-model').value);
+      const vin = clean(card.querySelector('.v-vin').value).toUpperCase();
+      return { text: year + ' ' + make + ' ' + model + (vin ? ' (VIN ' + vin + ')' : '') };
+    });
+  }
+
+  function buildStage2() {
+    const p1 = state.stage1Payload;
+    const vehicles = hasAuto() ? collectVehicles() : [];
+    const sameAddr = $('sameAddress').checked;
+    const homeAddress = hasHome()
+      ? (sameAddr ? p1.street + ', ' + p1.city + ', ' + p1.state + ' ' + p1.zip
+        : clean($('propStreet').value) + ', ' + clean($('propCity').value) + ', ' + $('propState').value + ' ' + clean($('propZip').value))
+      : '';
+    const insured = $('currentlyInsured').value;
+    const carrier = insured === 'Yes' ? clean($('priorCarrier').value) : '';
+    const renewal = insured === 'Yes' && !hasLife() ? clean($('renewalDate').value) : '';
+    const sel = (id) => { const e = $(id); return e.value ? e.selectedOptions[0].textContent : ''; };
+    const extra = clean($('extraNotes').value);
+
+    const lines = [];
+    lines.push('Quick Quote form: details added');
+    lines.push('Coverage: ' + COVERAGE_LABEL[state.coverage]);
+    if (LANDING_PAGE !== 'quote') lines.push('Landing page: ' + LANDING_PAGE);
+    if (isCommercial()) lines.push('Business: ' + p1.businessName);
+    lines.push('Preferred contact: ' + $('contactMethod').selectedOptions[0].textContent);
+    if (vehicles.length) {
+      lines.push('');
+      lines.push('Vehicles (' + vehicles.length + '):');
+      vehicles.forEach((v, i) => lines.push((i + 1) + '. ' + v.text));
+      lines.push('Main use: ' + $('primaryUse').value);
+    }
+    if (hasHome()) {
+      lines.push('');
+      lines.push('Home:');
+      lines.push('Property address: ' + homeAddress);
+      lines.push('Own / rent / condo: ' + $('propertyType').value);
+      lines.push('Year built: ' + clean($('yearBuilt').value));
+      if (clean($('squareFeet').value)) lines.push('Square feet: ' + clean($('squareFeet').value));
+      if ($('newHome').checked) {
+        const zip = clean($('prevZip').value);
+        lines.push('New home: Yes');
+        lines.push('Previous address: ' + clean($('prevStreet').value) + ', ' + clean($('prevCity').value) + ', ' + $('prevState').value + (zip ? ' ' + zip : ''));
+      }
+    }
+    if (hasLife()) {
+      lines.push('');
+      lines.push('Life:');
+      lines.push('Coverage for: ' + sel('lifeFor'));
+      lines.push('Type: ' + sel('lifeType'));
+      lines.push('Amount: ' + sel('lifeAmount'));
+      if ($('lifePurpose').value) lines.push('Purpose: ' + sel('lifePurpose'));
+    }
+    if (isCommercial()) {
+      lines.push('');
+      lines.push('Business details:');
+      lines.push('Industry: ' + clean($('industry').value));
+      lines.push('Employees: ' + sel('employees'));
+      if ($('revenue').value) lines.push('Annual revenue: ' + sel('revenue'));
+      lines.push('Coverage wanted: ' + commercialCoverages().join(', '));
+    }
+    lines.push('');
+    lines.push(hasLife() ? 'Currently has life insurance: ' + insured : 'Currently insured: ' + insured);
+    if (carrier) lines.push('Current company: ' + carrier);
+    if (renewal) lines.push('Renewal date: ' + renewal);
+    if (p1.spouseFirstName) {
+      lines.push('');
+      lines.push(p1.spouseRelationship + ': ' + p1.spouseFirstName + ' ' + p1.spouseLastName + (p1.spouseEmail ? ' (' + p1.spouseEmail + ')' : ''));
+    }
+    if (p1.secondaryContactFirstName) {
+      lines.push('');
+      lines.push('Second contact: ' + p1.secondaryContactFirstName + ' ' + p1.secondaryContactLastName);
+    }
+    if (extra) {
+      lines.push('');
+      lines.push('Notes from the client: ' + extra);
+    }
+
+    const out = {
+      leadId: state.leadId, stage: '2', source: SOURCE_NAME, landingPage: LANDING_PAGE,
+      applicantType: applicantType(), businessName: p1.businessName,
+      firstName: p1.firstName, lastName: p1.lastName, email: p1.email, phone: p1.phone,
+      coverage: state.coverage,
+      noteTitle: 'Quick Quote details - ' + COVERAGE_LABEL[state.coverage],
+      noteBody: lines.join('\n'),
+      vehicleCount: String(vehicles.length),
+      propertyAddress: homeAddress,
+      propertyType: hasHome() ? $('propertyType').value : '',
+      yearBuilt: hasHome() ? clean($('yearBuilt').value) : '',
+      squareFeet: hasHome() ? clean($('squareFeet').value) : '',
+      primaryUse: hasAuto() ? $('primaryUse').value : '',
+      currentlyInsured: insured, priorCarrier: carrier, renewalDate: renewal,
+      contactMethod: $('contactMethod').value,
+      extraNotes: extra,
+      submittedAt: new Date().toISOString()
+    };
+    vehicles.forEach((v, i) => { out['vehicle' + (i + 1)] = v.text; });
+    return out;
+  }
+
+  // ---- Sending -------------------------------------------------------------
+  const isBot = () => clean($('website').value) !== '';
+
+  async function sendHook(url, data) {
+    if (isBot()) return 'skipped';
+    if (!isLive) return 'preview';
+    if (!url) return 'missing';
+    try {
+      await fetch(url, { method: 'POST', mode: 'no-cors', keepalive: true, body: new URLSearchParams(data) });
+      return 'sent';
+    } catch (e) {
+      return 'failed';
+    }
+  }
+
+  // ---- Navigation ----------------------------------------------------------
+  function goTo(step) {
+    current = step;
+    steps.forEach((s) => s.classList.toggle('active', Number(s.dataset.step) === step));
+    const shown = Math.min(step, totalSteps);
+    $('stepCounter').textContent = '0' + shown + ' / 0' + totalSteps;
+    $('progressFill').style.width = (shown / totalSteps * 100) + '%';
+    backBtn.disabled = step === 1 || (step === 3 && state.stage1Done);
+    $('navRow').hidden = step > totalSteps;
+    nextBtn.textContent = step === totalSteps ? 'Send' : 'Continue';
+    nextBtn.disabled = step === 1 && !state.coverage;
+    window.scrollTo(0, 0);
+  }
+
+  function renderDone(outcome) {
+    const name = clean($('firstName').value) || 'friend';
+    const method = { Call: 'phone call', Text: 'text', Email: 'email', Either: 'phone or email' }[$('contactMethod').value] || 'your preferred method';
+    const badge = $('doneBadge');
+    const status = $('statusLine');
+    badge.classList.remove('warn');
+    status.classList.remove('warn');
+    if (outcome === 'error') {
+      badge.classList.add('warn');
+      status.classList.add('warn');
+      status.textContent = 'We could not confirm this was sent';
+      $('doneHeading').textContent = 'Almost there, ' + name + '.';
+      $('doneHint').textContent = 'Something went wrong sending your request. Please call the office so nothing gets lost.';
+    } else {
+      status.textContent = outcome === 'preview' ? 'Preview only. Nothing was sent.' : 'Sent to Paragon';
+      $('doneHeading').textContent = "You're in the queue, " + name + '.';
+      $('doneHint').textContent = 'A Paragon agent will reach out by ' + method + ' shortly.';
+    }
+  }
+
+  backBtn.addEventListener('click', () => { if (current > 1) goTo(current - 1); });
+
+  nextBtn.addEventListener('click', async () => {
+    if (state.busy) return;
+
+    if (current === 1) {
+      if (state.coverage) { renderContact(); goTo(2); }
+      return;
+    }
+
+    if (current === 2) {
+      if (!validateContact()) return;
+      if (!state.stage1Done) {
+        state.busy = true;
+        nextBtn.disabled = true;
+        nextBtn.textContent = 'Saving...';
+        state.stage1Payload = buildStage1();
+        state.stage1Result = await sendHook(hookUrl('stage1'), state.stage1Payload);
+        state.stage1Done = true;
+        state.busy = false;
+        nextBtn.disabled = false;
+      }
+      renderDetails();
+      goTo(3);
+      return;
+    }
+
+    if (current === 3) {
+      if (!validateDetails()) return;
+      state.busy = true;
+      nextBtn.disabled = true;
+      nextBtn.textContent = 'Sending...';
+      if (state.stage1Result === 'failed') {
+        state.stage1Result = await sendHook(hookUrl('stage1'), state.stage1Payload);
+        if (state.stage1Result === 'sent') await sleep(4000);
+      }
+      const r2 = await sendHook(hookUrl('stage2'), buildStage2());
+      let outcome = 'sent';
+      if (!isLive) outcome = 'preview';
+      else if (state.stage1Result === 'failed' || state.stage1Result === 'missing' || r2 === 'failed') outcome = 'error';
+      if (isLive && !hookUrl('stage2')) console.warn('HOOKS.' + applicantType() + '.stage2 is empty: the details note was not sent.');
+      state.busy = false;
+      goTo(4);
+      renderDone(outcome);
+    }
+  });
+
+  $('quoteForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (current <= totalSteps && !nextBtn.disabled) nextBtn.click();
+  });
+
+  $('previewBanner').hidden = isLive;
+  goTo(1);
+})();
+</script>
+
+</body></html>

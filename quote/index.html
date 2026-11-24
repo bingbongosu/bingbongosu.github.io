@@ -469,6 +469,11 @@
   // Commercial sends no code (the business details go in the note).
   const LOB_CODES = { Auto: 'AUTOP', Home: 'HOME', Life: 'LIFE' };
   const SOURCE_NAME = 'Quick Quote form';
+  // Which copy of the form this is, taken from the address: /quote, /joedeblla, /apmre and so on. It rides
+  // along on every lead so you can tell which page it came from. Not mapped in Zapier unless you want it.
+  const LANDING_PAGE = (location.pathname.split('/').filter(Boolean)
+    .map((seg) => seg.replace(/\.html?$/i, '').toLowerCase().replace(/[^a-z0-9-]/g, ''))
+    .filter((seg) => seg && seg !== 'index').pop()) || 'quote';
   // Leads are only sent from these hosts (or with ?live=1). Anywhere else the page runs as a preview.
   const LIVE_HOSTS = ['breinlinger.co', 'www.breinlinger.co'];
   const MAX_VEHICLES = 6;
@@ -891,7 +896,7 @@
     if (dlNum) dlLines.push("Driver's license: " + ($('dlState').value ? $('dlState').value + ' ' : '') + dlNum);
     if (spDl) dlLines.push($('spouseRel').value + " driver's license: " + ($('spouseDlState').value ? $('spouseDlState').value + ' ' : '') + spDl);
     return {
-      leadId: state.leadId, stage: '1', source: SOURCE_NAME,
+      leadId: state.leadId, stage: '1', source: SOURCE_NAME, landingPage: LANDING_PAGE,
       driverNoteTitle: dlLines.length ? 'QQ | Driver info' : '',
       driverNoteBody: dlLines.join('\n'),
       applicantType: applicantType(),
@@ -940,6 +945,7 @@
     const lines = [];
     lines.push('Quick Quote form: details added');
     lines.push('Coverage: ' + COVERAGE_LABEL[state.coverage]);
+    if (LANDING_PAGE !== 'quote') lines.push('Landing page: ' + LANDING_PAGE);
     if (isCommercial()) lines.push('Business: ' + p1.businessName);
     lines.push('Preferred contact: ' + $('contactMethod').selectedOptions[0].textContent);
     if (vehicles.length) {
@@ -995,7 +1001,7 @@
     }
 
     const out = {
-      leadId: state.leadId, stage: '2', source: SOURCE_NAME,
+      leadId: state.leadId, stage: '2', source: SOURCE_NAME, landingPage: LANDING_PAGE,
       applicantType: applicantType(), businessName: p1.businessName,
       firstName: p1.firstName, lastName: p1.lastName, email: p1.email, phone: p1.phone,
       coverage: state.coverage,
